@@ -40,6 +40,13 @@
   tamanho/extração)
 - ⏳ Contatar Dupla 8 (protocolos do Exp. B)
 
+### Repo Git
+
+- ✅ `git init` + commit `d1a7d22` em 03/11/2026
+- ✅ GitHub público: <https://github.com/mauricegss/projeto-biometria>
+  (branch `main`, remote `origin`)
+- 🔲 Tag `final-v1.0` apenas no commit de entrega
+
 ---
 
 ## 1. Onde está o plano de implementação?
@@ -160,7 +167,8 @@ Este documento centraliza tudo: **o que foi feito, o que está quebrado, o que f
 
 - [ ] **Artigo científico 6–8 páginas** (template SBC/IEEE) — não iniciado
 - [ ] **Apresentação 10 min** + arguição 5 min — não iniciada
-- [ ] Repositório Git: `git init`, remote, e **tag `final-v1.0`** com hash no README — **hoje nem é um repo git**
+- [x] Repositório Git: `git init` + remote GitHub (`mauricegss/projeto-biometria`, público) — 03/11/2026
+- [ ] Tag `final-v1.0` com hash no README (somente no commit de entrega)
 - [x] `LICENSE` (MIT) — criado em 03/11/2026
 - [ ] Preencher: hardware, data de entrega, versão, hash do commit (README já com data 18/25/11)
 
@@ -171,7 +179,7 @@ Este documento centraliza tudo: **o que foi feito, o que está quebrado, o que f
 **Hoje: 03/11/2026 · Entregas: 18/11 ou 25/11/2026 → janela de 15–22 dias**
 
 ### Fase 0 — Fundação (dias 1–3: 03–05/11)
-1. `git init` + primeiro commit + remote (GitHub) 🔄 (03/11: commit local + `gh repo create` em andamento)
+1. `git init` + primeiro commit + remote (GitHub) ✅ (03/11: repo público `mauricegss/projeto-biometria`)
 2. Corrigir bugs críticos **C1–C10** (prioridade: `model.py`, `train.py`, `evaluate.py`) ✅ (+ C11 torchaudio/torchcodec)
 3. Baixar VCTK e LibriSpeech ⏳ (downloads em background)
 4. Corrigir README (caminhos `src/`, flags, scripts inexistentes) ✅
