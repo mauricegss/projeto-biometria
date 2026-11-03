@@ -1,0 +1,20 @@
+# Dados brutos (baixados manualmente; ver README)
+data/**
+!data/**/
+!data/**/.gitkeep
+
+# Artefatos de execução
+checkpoints/*.pt
+embeddings/**/*.npy
+*.pt
+*.npy
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Sistema
+.DS_Store
+Thumbs.db

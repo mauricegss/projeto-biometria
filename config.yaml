@@ -1,0 +1,78 @@
+project:
+  name: Speaker Verification - Dupla 7
+  team: Dupla 7
+  modality: audio
+  seed: 42
+
+datasets:
+  vctk:
+    path: data/vctk
+    sample_rate: 16000
+    splits:
+      train: 0.70
+      val: 0.15
+      test: 0.15
+  librispeech:
+    path: data/librispeech
+    sample_rate: 16000
+
+preprocessing:
+  sample_rate: 16000
+  mono: true
+  vad_aggressiveness: 2
+  vad_enabled: true
+  n_mels: 80
+  win_length_ms: 25
+  hop_length_ms: 10
+  n_fft: 512
+  fmin: 20
+  fmax: 7600
+  normalize: true
+
+model:
+  name: ECAPA-TDNN
+  embedding_dim: 192
+  pretrained_source: speechbrain/spkrec-ecapa-voxceleb
+  pretrained_dataset: VoxCeleb2
+  n_parameters: 20767552
+  loss: AAM-Softmax
+  aam_margin: 0.2
+  aam_scale: 30
+
+training:
+  seeds:
+    - 42
+    - 123
+    - 2026
+  epochs: 20
+  batch_size: 64
+  learning_rate: 0.001
+  optimizer: Adam
+  checkpoint_dir: checkpoints/
+  fine_tune: true
+  freeze_encoder: false
+
+matching:
+  method: cosine
+  threshold_from: validation
+
+evaluation:
+  genuine_pairs_per_identity: 10
+  impostor_pairs_per_identity: 10
+  max_pairs: 10000
+
+robustness:
+  noise_types:
+    - white
+    - babble
+  snr_levels:
+    - 20
+    - 10
+    - 5
+  noise_data_path: data/noise/
+
+paths:
+  protocols_dir: protocols/
+  results_dir: results/
+  embeddings_dir: embeddings/
+  checkpoints_dir: checkpoints/

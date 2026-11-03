@@ -1,0 +1,653 @@
+﻿ 
+Minist├®rio da Educa├º├úo 
+Universidade Tecnol├│gica Federal do Paran├í 
+Biometria 
+C├ómpus Ponta Grossa 
+ 
+ 
+ 
+PROJETO FINAL ÔÇô DISCIPLINA BIOMETRIA 
+Sistemas Biom├®tricos Baseados em Redes Neurais Convolucionais 
+Modalidades: Face, Impress├úo Digital, ├ìris e Voz 
+Equipe: trabalho em dupla / Data de Entrega: 18 ou 25/11/2026 
+Entrega final: artigo cient├¡fico + link para a implementa├º├úo + apresenta├º├úo 
+ 
+1. Objetivo do Projeto 
+O Projeto Final tem o objetivo de desenvolver, avaliar e comparar sistemas biom├®tricos 
+baseados em Redes Neurais Convolucionais (CNNs), utilizando protocolos experimentais 
+comuns e reprodut├¡veis. O foco principal ser├í a verifica├º├úo biom├®trica 1:1, baseada na 
+gera├º├úo de embeddings e na compara├º├úo de similaridade entre amostras. 
+A proposta foi estruturada para que os resultados produzidos pelas diferentes duplas 
+possam ser consolidados posteriormente em um estudo comparativo, permitindo investigar o 
+efeito da arquitetura da CNN, do dataset, da generaliza├º├úo entre bases e da robustez do 
+sistema. 
+Quest├úo central: o objetivo n├úo ├® simplesmente obter a maior acur├ícia poss├¡vel, 
+mas produzir um experimento biom├®trico correto, reproduz├¡vel, compar├ível e 
+cientificamente defens├ível. 
+ 
+2. Organiza├º├úo e distribui├º├úo das duplas 
+O projeto ser├í desenvolvido em dupla. Cada modalidade biom├®trica ser├í atribu├¡da a 
+duas duplas. As duas duplas da mesma modalidade dever├úo utilizar fam├¡lias de CNN 
+diferentes e avaliar seus modelos nas duas bases associadas ├á modalidade. 
+Dupla 
+Modalidade 
+Base principal 
+Segunda base 
+1 
+Face 
+LFW 
+CFP-FP 
+2 
+Face 
+CFP-FP 
+LFW 
+3 
+Impress├úo 
+Digital 
+FVC2002 DB1 
+FVC2004 DB1 
+4 
+Impress├úo 
+Digital 
+FVC2004 DB1 
+FVC2002 DB1 
+ 
+Minist├®rio da Educa├º├úo 
+Universidade Tecnol├│gica Federal do Paran├í 
+Biometria 
+C├ómpus Ponta Grossa 
+ 
+ 
+ 
+Dupla 
+Modalidade 
+Base principal 
+Segunda base 
+5 
+├ìris 
+CASIA-Iris-V3 Interval 
+IIT Delhi Iris 
+6 
+├ìris 
+IIT Delhi Iris 
+CASIA-Iris-V3 Interval 
+7 
+Voz 
+VCTK 
+LibriSpeech train-clean-100 
+8 
+Voz 
+LibriSpeech train-clean-100 
+VCTK 
+ 
+A base principal ser├í utilizada no desenvolvimento inicial, treinamento ou fine-tuning 
+(quando aplic├ível) e valida├º├úo do sistema. Em seguida, o mesmo sistema dever├í ser avaliado 
+tamb├®m na segunda base, permitindo an├ílise cross-dataset. 
+ 
+3. Pergunta central de pesquisa 
+Os projetos dever├úo contribuir para responder ├á seguinte quest├úo: 
+Como diferentes arquiteturas CNN se comportam em diferentes bases de uma 
+mesma 
+modalidade 
+biom├®trica, 
+considerando 
+desempenho, 
+custo 
+computacional, robustez e capacidade de generaliza├º├úo? 
+                        Dataset A        Dataset B 
+CNN da Dupla A               Ô£ô                Ô£ô 
+CNN da Dupla B               Ô£ô                Ô£ô 
+ 
+4. Escolha da CNN 
+A arquitetura ser├í escolhida pela pr├│pria dupla. Entretanto, as duas duplas que trabalham 
+com a mesma modalidade biom├®trica n├úo poder├úo utilizar a mesma fam├¡lia de CNN. 
+ÔÇó Exemplo aceit├ível: ResNet50 versus EfficientNet-B0; MobileNetV3 versus ConvNeXt-Tiny. 
+ÔÇó Exemplo n├úo recomendado: ResNet18 versus ResNet34, pois pertencem ├á mesma fam├¡lia. 
+ÔÇó A arquitetura dever├í ser registrada com o professor antes do in├¡cio dos experimentos para 
+evitar duplicidade. 
+ÔÇó S├úo permitidos modelos pr├®-treinados, transfer learning, fine-tuning, redes siamesas, 
+Contrastive Loss, Triplet Loss, ArcFace/CosFace e outras estrat├®gias devidamente 
+justificadas. 
+A dupla dever├í declarar no artigo e no reposit├│rio: arquitetura, origem dos pesos, dataset 
+de pr├®-treinamento, camadas congeladas, camadas treinadas, fun├º├úo de perda, dimens├úo do 
+embedding e n├║mero de par├ómetros do modelo. 
+ 
+Minist├®rio da Educa├º├úo 
+Universidade Tecnol├│gica Federal do Paran├í 
+Biometria 
+C├ómpus Ponta Grossa 
+ 
+ 
+ 
+5. Requisitos 
+N├úo ser├í suficiente implementar uma CNN classificadora que apenas retorne 
+diretamente o nome ou a classe do indiv├¡duo. O sistema dever├í gerar uma representa├º├úo 
+biom├®trica (template/embedding) e realizar matching entre duas amostras. 
+Amostra A ÔåÆ Pr├®-processamento ÔåÆ CNN ÔåÆ Embedding A 
+                                      ├ù 
+Amostra B ÔåÆ Pr├®-processamento ÔåÆ CNN ÔåÆ Embedding B 
+                                      Ôåô 
+                                  Matching 
+                                      Ôåô 
+                                    Score 
+                                      Ôåô 
+                                  Threshold 
+                                      Ôåô 
+                            Genu├¡no / Impostor 
+ 
+6. Pipeline obrigat├│rio 
+Dado bruto 
+   Ôåô 
+Controle de qualidade 
+   Ôåô 
+Pr├®-processamento 
+   Ôåô 
+Localiza├º├úo / Segmenta├º├úo 
+   Ôåô 
+Normaliza├º├úo 
+   Ôåô 
+CNN 
+   Ôåô 
+Embedding 
+   Ôåô 
+Matching 
+   Ôåô 
+Score 
+   Ôåô 
+Threshold 
+   Ôåô 
+Decis├úo 
+ 
+ 
+Minist├®rio da Educa├º├úo 
+Universidade Tecnol├│gica Federal do Paran├í 
+Biometria 
+C├ómpus Ponta Grossa 
+ 
+ 
+ 
+Na apresenta├º├úo e no artigo dever├úo ser mostrados exemplos reais das principais 
+etapas do pipeline, sempre que aplic├ível ├á modalidade. 
+ 
+7. Pr├®-processamento padronizado por modalidade 
+Para tornar a compara├º├úo entre CNNs mais justa, as duas duplas da mesma 
+modalidade dever├úo utilizar, tanto quanto poss├¡vel, o mesmo pr├®-processamento. Caso uma 
+etapa seja alterada, a diferen├ºa dever├í ser claramente documentada e justificada. 
+Modalidade 
+Pipeline m├¡nimo recomendado 
+Face 
+detec├º├úo ÔåÆ alinhamento por landmarks ÔåÆ recorte ÔåÆ 
+normaliza├º├úo 
+Impress├úo Digital ROI ÔåÆ escala de cinza ÔåÆ normaliza├º├úo ÔåÆ redimensionamento 
+├ìris 
+segmenta├º├úo ÔåÆ pupila/limbo ÔåÆ Rubber Sheet ÔåÆ normaliza├º├úo 
+Voz 
+mono 16 kHz ÔåÆ VAD/remo├º├úo de sil├¬ncio ÔåÆ log-Mel 
+spectrogram ÔåÆ normaliza├º├úo 
+ 
+A inten├º├úo ├® reduzir o risco de atribuir ├á CNN uma vantagem que, na realidade, tenha 
+sido causada por um pr├®-processamento mais favor├ível. 
+ 
+8. Matching padronizado 
+Como m├®trica de refer├¬ncia, dever├í ser utilizada a similaridade de cosseno entre 
+embeddings normalizados. Caso a literatura da arquitetura escolhida recomende outra 
+m├®trica, ela poder├í ser utilizada adicionalmente, mas os resultados com similaridade de 
+cosseno dever├úo ser preservados para compara├º├úo entre as duplas. 
+Interpreta├º├úo padr├úo: quanto maior a similaridade de cosseno, maior a semelhan├ºa entre as 
+duas amostras biom├®tricas. 
+ 
+9. Separa├º├úo treinamento, valida├º├úo e teste 
+Quando houver treinamento ou fine-tuning, treinamento, valida├º├úo e teste dever├úo ser 
+mutuamente exclusivos por identidade. A divis├úo nunca dever├í ser feita apenas por imagem 
+ou amostra. 
+ 
+Minist├®rio da Educa├º├úo 
+Universidade Tecnol├│gica Federal do Paran├í 
+Biometria 
+C├ómpus Ponta Grossa 
+ 
+ 
+ 
+INCORRETO: 
+Jo├úo_1 ÔåÆ treino 
+Jo├úo_2 ÔåÆ treino 
+Jo├úo_3 ÔåÆ teste 
+ 
+CORRETO: 
+Jo├úo / Maria / Pedro ÔåÆ treino 
+Carlos ÔåÆ valida├º├úo 
+Ana / Jos├® / Lucas ÔåÆ teste 
+ 
+Essa regra evita identity leakage e resultados artificialmente inflados. 
+ 
+10. Regras espec├¡ficas por modalidade 
+ 
+10.1 ├ìris 
+Olho esquerdo e olho direito ser├úo considerados identidades biom├®tricas distintas. 
+Assim, o olho esquerdo de um indiv├¡duo n├úo forma par genu├¡no com o olho direito do mesmo 
+indiv├¡duo. 
+ 
+10.2 Voz 
+O problema ├® Speaker Verification, e n├úo reconhecimento do conte├║do falado. O 
+objetivo ├® responder ÔÇ£├® a mesma pessoa falando?ÔÇØ, e n├úo ÔÇ£o que a pessoa falou?ÔÇØ. A 
+representa├º├úo de entrada dever├í ser documentada, sendo recomendado o uso de log-Mel 
+spectrogram ou representa├º├úo equivalente. 
+ 
+11. Forma├º├úo dos pares genu├¡nos e impostores 
+Cada dataset dever├í gerar dois tipos de compara├º├úo: 
+ÔÇó Par genu├¡no: duas amostras da mesma identidade biom├®trica. 
+ÔÇó Par impostor: duas amostras pertencentes a identidades biom├®tricas diferentes. 
+Todos os scores dever├úo ser armazenados. Exemplo de arquivo scores.csv: 
+amostra_1,amostra_2,tipo,score 
+001_1.jpg,001_2.jpg,genuine,0.8721 
+001_1.jpg,053_2.jpg,impostor,0.2419 
+ 
+ 
+Minist├®rio da Educa├º├úo 
+Universidade Tecnol├│gica Federal do Paran├í 
+Biometria 
+C├ómpus Ponta Grossa 
+ 
+ 
+ 
+Os mesmos pares dever├úo ser utilizados pelas duas CNNs avaliadas em uma mesma base. 
+ 
+12. Protocol comum 
+Sempre que a base possuir protocolo oficial de avalia├º├úo, ele dever├í ser utilizado 
+prioritariamente. Nos demais casos, as divis├Áes e os pares ser├úo definidos por um protocolo 
+comum, com semente fixa, para assegurar a reprodutibilidade. 
+protocols/ 
+Ôö£ÔöÇÔöÇ train.csv 
+Ôö£ÔöÇÔöÇ validation.csv 
+Ôö£ÔöÇÔöÇ test.csv 
+Ôö£ÔöÇÔöÇ genuine_pairs.csv 
+ÔööÔöÇÔöÇ impostor_pairs.csv 
+ 
+seed = 42 
+ 
+13. Defini├º├úo do threshold 
+O conjunto de teste n├úo poder├í ser utilizado para escolher threshold ou 
+hiperpar├ómetros. O limiar dever├í ser definido exclusivamente com dados de valida├º├úo e ent├úo 
+congelado antes da avalia├º├úo final. 
+VALIDA├ç├âO ÔåÆ scores genu├¡nos + impostores ÔåÆ defini├º├úo do threshold 
+                                             Ôåô 
+                                          CONGELA 
+                                             Ôåô 
+                                           TESTE 
+ 
+14. M├®tricas obrigat├│rias 
+M├®trica / informa├º├úo 
+Obrigat├│ria? 
+Observa├º├úo 
+FMR/FAR 
+Sim 
+Taxa de falsas aceita├º├Áes/matches 
+FNMR/FRR 
+Sim 
+Taxa de falsas rejei├º├Áes/non-matches 
+EER 
+Sim 
+Ponto em que FMR e FNMR se igualam 
+ROC 
+Sim 
+Curva de desempenho em diferentes 
+limiares 
+ 
+Minist├®rio da Educa├º├úo 
+Universidade Tecnol├│gica Federal do Paran├í 
+Biometria 
+C├ómpus Ponta Grossa 
+ 
+ 
+ 
+M├®trica / informa├º├úo 
+Obrigat├│ria? 
+Observa├º├úo 
+AUC 
+Sim 
+├ürea sob a curva ROC 
+Distribui├º├úo genu├¡no ├ù 
+impostor 
+Sim 
+Histograma ou densidade dos scores 
+TAR@FAR=1% 
+Quando 
+vi├ível 
+Depende da quantidade de compara├º├Áes 
+impostoras 
+Tempo m├®dio de 
+infer├¬ncia 
+Sim 
+Registrar hardware 
+N├║mero de par├ómetros 
+Sim 
+Complexidade do modelo 
+Tamanho do modelo 
+Sim 
+Arquivo/pesos do modelo 
+FTA ÔÇö Failure to Acquire 
+Quando 
+aplic├ível 
+Falhas antes do matching 
+Rank-1 / CMC 
+Opcional 
+Somente se houver experimento 1:N 
+ 
+15. Gr├íficos obrigat├│rios: distribui├º├úo de scores 
+O artigo dever├í apresentar a distribui├º├úo dos scores genu├¡nos e impostores, com 
+indica├º├úo do threshold utilizado. O objetivo ├® visualizar a separa├º├úo entre as classes e 
+compreender erros que uma ├║nica medida de acur├ícia n├úo revela. 
+ 
+16. Experimentos obrigat├│rios 
+ 
+16.1 Experimento A ÔÇô desempenho na base principal 
+Cada dupla dever├í inicialmente desenvolver e avaliar sua CNN na base principal 
+atribu├¡da. 
+ 
+16.2 Experimento B ÔÇô 2 CNNs x 2 datasets 
+As duas CNNs de uma modalidade dever├úo ser avaliadas nas duas bases 
+correspondentes. Essa matriz de resultados permitir├í investigar se a arquitetura mant├®m seu 
+desempenho quando o dataset muda. 
+ 
+Minist├®rio da Educa├º├úo 
+Universidade Tecnol├│gica Federal do Paran├í 
+Biometria 
+C├ómpus Ponta Grossa 
+ 
+ 
+ 
+                    Dataset A      Dataset B 
+CNN da Dupla A          Ô£ô              Ô£ô 
+CNN da Dupla B          Ô£ô              Ô£ô 
+ 
+16.3 Experimento C ÔÇô cross dataset 
+O modelo desenvolvido ou ajustado na base de origem dever├í ser congelado e 
+avaliado na base de destino sem novo fine-tuning. Esse experimento mede capacidade de 
+generaliza├º├úo e sensibilidade a diferen├ºas de sensor, protocolo e dom├¡nio. 
+Base A ÔåÆ desenvolvimento / fine-tuning ÔåÆ modelo congelado ÔåÆ Base B ÔåÆ avalia├º├úo 
+ 
+16.4 Experimento D - robustez 
+Modalidade 
+Perturba├º├úo m├¡nima sugerida 
+Face 
+blur e/ou oclus├úo 
+Impress├úo Digital 
+blur e/ou rota├º├úo 
+├ìris 
+blur e/ou oclus├úo 
+Voz 
+ru├¡do aditivo 
+ 
+Dever├úo ser avaliados, no m├¡nimo, quatro n├¡veis: original, baixa degrada├º├úo, m├®dia 
+degrada├º├úo e alta degrada├º├úo. O artigo dever├í discutir como o desempenho biom├®trico se 
+altera conforme a qualidade da amostra diminui. 
+ 
+16.5 Estudo de abla├º├úo 
+Cada dupla dever├í realizar um estudo de abla├º├úo simples, removendo ou modificando 
+uma etapa do pipeline para verificar sua contribui├º├úo real. Exemplos: face com/sem 
+alinhamento; ├¡ris com/sem Rubber Sheet; voz com/sem VAD; impress├úo digital com/sem 
+normaliza├º├úo. 
+ 
+17. Repeti├º├úo experimental 
+Para modelos efetivamente treinados ou ajustados, recomenda-se executar o 
+treinamento tr├¬s vezes com sementes diferentes (por exemplo: 42, 123 e 2026) e reportar 
+ 
+Minist├®rio da Educa├º├úo 
+Universidade Tecnol├│gica Federal do Paran├í 
+Biometria 
+C├ómpus Ponta Grossa 
+ 
+ 
+ 
+m├®dia e desvio-padr├úo. Esse procedimento evita interpretar pequenas diferen├ºas aleat├│rias 
+como melhoria real. 
+ 
+18. Efici├¬ncia computacional 
+A compara├º├úo n├úo dever├í considerar apenas desempenho biom├®trico. Tamb├®m 
+dever├úo ser reportados custo e efici├¬ncia do modelo: n├║mero de par├ómetros, tamanho dos 
+pesos, tempo de infer├¬ncia e hardware utilizado. A discuss├úo dever├í considerar se pequenas 
+melhorias de EER justificam aumentos expressivos de custo computacional. 
+ 
+19. An├ílise dos erros 
+Cada dupla dever├í selecionar pelo menos tr├¬s falsos matches e tr├¬s falsos non-
+matches. Para cada caso, o artigo dever├í apresentar as amostras (ou representa├º├úo 
+equivalente, no caso de voz), score, threshold e uma hip├│tese t├®cnica para a causa do erro. 
+Modalidade 
+Poss├¡veis causas a investigar 
+Face 
+pose, ilumina├º├úo, idade, oclus├úo, alinhamento 
+Impress├úo Digital 
+captura parcial, rota├º├úo, baixa qualidade, ru├¡do 
+├ìris 
+segmenta├º├úo, reflexos, p├ílpebra, c├¡lios, dilata├º├úo 
+Voz 
+ru├¡do, microfone, dura├º├úo, canal, condi├º├úo vocal 
+ 
+20. Entrega Final 
+A entrega formal ser├í composta por apenas dois produtos principais: 
+1.  Artigo cient├¡fico em PDF. 
+2.  Link para o reposit├│rio contendo a implementa├º├úo utilizada para produzir os resultados 
+apresentados no artigo. 
+Todo resultado apresentado no artigo dever├í poder ser reproduzido a partir do 
+c├│digo disponibilizado no reposit├│rio. 
+3. Apresenta├º├úo para a turma de 10 minutos, devendo conter metodologia, resultados e 
+discuss├Áes. 
+ 
+21. Artigo cient├¡fico 
+O artigo ser├í o documento principal de avalia├º├úo e dever├í apresentar o trabalho como 
+investiga├º├úo cient├¡fica, e n├úo como simples relat├│rio de programa├º├úo. Recomenda-se 
+ 
+Minist├®rio da Educa├º├úo 
+Universidade Tecnol├│gica Federal do Paran├í 
+Biometria 
+C├ómpus Ponta Grossa 
+ 
+ 
+ 
+extens├úo de 6 a 8 p├íginas, al├®m das refer├¬ncias, em template ├║nico a ser definido pelo 
+professor (por exemplo, SBC ou IEEE). 
+Se├º├úo 
+Conte├║do m├¡nimo 
+1. Introdu├º├úo 
+problema, modalidade, motiva├º├úo, objetivo e contribui├º├úo 
+2. Trabalhos 
+relacionados 
+m├®todos da literatura, CNNs e resultados de refer├¬ncia 
+3. Base de dados 
+indiv├¡duos, amostras, aquisi├º├úo, protocolo e exemplos 
+4. Metodologia 
+pipeline, pr├®-processamento, CNN, treinamento/fine-tuning, 
+embedding e matching 
+5. Protocolo 
+experimental 
+divis├Áes, pares, seeds, hardware, threshold, cross-dataset e 
+robustez 
+6. Resultados 
+EER, FMR, FNMR, ROC/AUC, distribui├º├Áes, efici├¬ncia e 
+demais m├®tricas 
+7. An├ílise e 
+discuss├úo 
+erros, cross-dataset, robustez, compara├º├úo, limita├º├Áes 
+8. Conclus├úo 
+s├¡ntese dos achados e perspectivas 
+Refer├¬ncias 
+fontes cient├¡ficas adequadas e atualizadas 
+ 
+O artigo dever├í permitir que um leitor compreenda e, em princ├¡pio, reproduza 
+integralmente o experimento realizado. 
+ 
+22. Reposit├│rio da implementa├º├úo 
+O artigo dever├í informar o endere├ºo do reposit├│rio (GitHub, GitLab ou equivalente). O 
+reposit├│rio dever├í conter, no m├¡nimo, os arquivos necess├írios para reproduzir o pipeline e os 
+resultados. 
+ 
+Minist├®rio da Educa├º├úo 
+Universidade Tecnol├│gica Federal do Paran├í 
+Biometria 
+C├ómpus Ponta Grossa 
+ 
+ 
+ 
+projeto/ 
+Ôö£ÔöÇÔöÇ README.md 
+Ôö£ÔöÇÔöÇ requirements.txt 
+Ôö£ÔöÇÔöÇ config.yaml 
+Ôö£ÔöÇÔöÇ preprocess.py 
+Ôö£ÔöÇÔöÇ model.py 
+Ôö£ÔöÇÔöÇ train.py 
+Ôö£ÔöÇÔöÇ extract_embeddings.py 
+Ôö£ÔöÇÔöÇ evaluate.py 
+Ôö£ÔöÇÔöÇ robustness.py 
+Ôö£ÔöÇÔöÇ protocols/ 
+Ôöé   Ôö£ÔöÇÔöÇ train.csv 
+Ôöé   Ôö£ÔöÇÔöÇ validation.csv 
+Ôöé   ÔööÔöÇÔöÇ test_pairs.csv 
+ÔööÔöÇÔöÇ results/ 
+    Ôö£ÔöÇÔöÇ scores.csv 
+    Ôö£ÔöÇÔöÇ metrics.json 
+    Ôö£ÔöÇÔöÇ roc.png 
+    ÔööÔöÇÔöÇ distributions.png 
+ 
+Os datasets originais n├úo dever├úo ser redistribu├¡dos no reposit├│rio. O README dever├í 
+explicar onde obt├¬-los legalmente e como organiz├í-los localmente. 
+ 
+23. Conte├║do do README 
+ÔÇó Modalidade biom├®trica e dataset(s). 
+ÔÇó CNN utilizada e origem dos pesos. 
+ÔÇó Dataset de pr├®-treinamento, quando aplic├ível. 
+ÔÇó Pr├®-processamento e formato de entrada. 
+ÔÇó Dimens├úo do embedding. 
+ÔÇó Fun├º├úo de perda e estrat├®gia de treinamento/fine-tuning. 
+ÔÇó M├®todo de matching e regra de threshold. 
+ÔÇó Vers├úo do Python e bibliotecas. 
+ÔÇó Hardware utilizado. 
+ÔÇó Seeds utilizadas. 
+ÔÇó Comandos para executar o pipeline e reproduzir os resultados do artigo. 
+ 
+ 
+ 
+ 
+Minist├®rio da Educa├º├úo 
+Universidade Tecnol├│gica Federal do Paran├í 
+Biometria 
+C├ómpus Ponta Grossa 
+ 
+ 
+ 
+24. Congelamento da vers├úo entregue 
+Na data da entrega, a dupla dever├í informar o link do reposit├│rio e o identificador exato 
+da vers├úo avaliada, por meio de tag ou hash de commit. Isso garante que a implementa├º├úo 
+utilizada na corre├º├úo seja exatamente a que produziu os resultados do artigo. 
+Reposit├│rio: https://... 
+Vers├úo avaliada: tag final-v1.0 
+      ou 
+Commit: a82b7f1 
+ 
+25. Arquivos de resultados 
+O reposit├│rio dever├í incluir, sempre que poss├¡vel, os arquivos scores.csv e metrics.json 
+correspondentes ├á vers├úo final. Esses arquivos ser├úo utilizados para consolidar 
+posteriormente os resultados das diferentes duplas sem necessidade de reexecutar todos os 
+modelos. 
+26. Tabela padronizada de resultados 
+Informa├º├úo 
+Resultado 
+Modalidade 
+ 
+Dataset 
+ 
+CNN 
+ 
+Pr├®-treinamento 
+ 
+N┬║ de par├ómetros 
+ 
+Dimens├úo do embedding 
+ 
+Matching 
+ 
+Threshold 
+ 
+EER 
+ 
+AUC 
+ 
+FMR 
+ 
+FNMR 
+ 
+TAR@FAR=1% 
+ 
+ 
+Minist├®rio da Educa├º├úo 
+Universidade Tecnol├│gica Federal do Paran├í 
+Biometria 
+C├ómpus Ponta Grossa 
+ 
+ 
+ 
+Informa├º├úo 
+Resultado 
+FTA 
+ 
+Tempo de infer├¬ncia 
+ 
+Tamanho do modelo 
+ 
+Hardware 
+ 
+ 
+27. Apresenta├º├úo e defesa 
+A apresenta├º├úo final funcionar├í como defesa do artigo e demonstra├º├úo do sistema, 
+mas n├úo ser├í considerada uma terceira entrega formal. Sugest├úo de tempo: 10 minutos de 
+apresenta├º├úo + 5 minutos de argui├º├úo. 
+A apresenta├º├úo dever├í seguir, preferencialmente, esta sequ├¬ncia: problema ÔåÆ dataset ÔåÆ 
+pipeline ÔåÆ CNN ÔåÆ embedding ÔåÆ matching ÔåÆ protocolo ÔåÆ resultados ÔåÆ cross-dataset ÔåÆ 
+robustez ÔåÆ erros ÔåÆ conclus├Áes. 
+ 
+28. Crit├®rios de avalia├º├úo 
+Crit├®rio 
+Implementa├º├úo e funcionamento do sistema 
+Corre├º├úo do protocolo experimental 
+CNN, embedding e matching 
+M├®tricas e an├ílise dos scores 
+Experimento cross-dataset 
+Robustez e estudo de abla├º├úo 
+An├ílise cr├¡tica dos erros 
+Reprodutibilidade da implementa├º├úo 
+Qualidade do artigo e da apresenta├º├úo 
+TOTAL 
+ 
+ 
+ 
+Minist├®rio da Educa├º├úo 
+Universidade Tecnol├│gica Federal do Paran├í 
+Biometria 
+C├ómpus Ponta Grossa 
+ 
+ 
+ 
+29. Regras gerais do projeto 
+1.  O projeto ser├í desenvolvido em dupla. 
+2.  Cada dupla receber├í uma modalidade biom├®trica e uma base principal. 
+3.  As duas duplas da mesma modalidade dever├úo utilizar CNNs de fam├¡lias diferentes. 
+4.  A CNN dever├í produzir embeddings biom├®tricos; classifica├º├úo direta por identidade n├úo 
+ser├í suficiente. 
+5.  A tarefa principal ser├í verifica├º├úo biom├®trica 1:1. 
+6.  N├úo ser├í permitida mistura de identidades entre treino, valida├º├úo e teste. 
+7.  O conjunto de teste n├úo poder├í ser usado para escolher threshold ou hiperpar├ómetros. 
+8.  Os mesmos pares de avalia├º├úo dever├úo ser usados pelas duas CNNs em uma mesma 
+base. 
+9.  As m├®tricas obrigat├│rias incluem EER, FMR, FNMR, ROC, AUC e distribui├º├úo de scores. 
+10.  O sistema dever├í ser avaliado na base principal e na segunda base da modalidade. 
+11.  O experimento cross-dataset dever├í ser realizado sem novo fine-tuning na base de 
+destino. 
+12.  Dever├í ser realizado pelo menos um experimento de robustez e um estudo de abla├º├úo. 
+13.  Pelo menos tr├¬s falsos matches e tr├¬s falsos non-matches dever├úo ser analisados. 
+14.  Uso de modelos pr├®-treinados ├® permitido, desde que origem, pesos e dataset de pr├®-
+treinamento sejam declarados. 
+15.  Os datasets originais n├úo dever├úo ser redistribu├¡dos no reposit├│rio. 
+16.  Todo resultado do artigo dever├í ser reproduz├¡vel pelo c├│digo entregue. 
+17.  A vers├úo final dever├í ser identificada por tag ou hash de commit. 
+18.  Resultados negativos s├úo v├ílidos quando o protocolo ├® correto e a an├ílise ├® 
+tecnicamente consistente. 
+
