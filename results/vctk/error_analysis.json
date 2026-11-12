@@ -1,0 +1,51 @@
+{
+    "falsos_matches": [
+        {
+            "arquivo1": "data\\vctk\\wav48_silence_trimmed\\p318\\p318_237_mic2.flac",
+            "arquivo2": "data\\vctk\\wav48_silence_trimmed\\p306\\p306_044_mic1.flac",
+            "score": 0.519476592540741,
+            "threshold": 0.3531748341863285,
+            "tipo_erro": "Falso Match (FM)"
+        },
+        {
+            "arquivo1": "data\\vctk\\wav48_silence_trimmed\\p228\\p228_341_mic2.flac",
+            "arquivo2": "data\\vctk\\wav48_silence_trimmed\\p244\\p244_247_mic1.flac",
+            "score": 0.48936349153518677,
+            "threshold": 0.3531748341863285,
+            "tipo_erro": "Falso Match (FM)"
+        },
+        {
+            "arquivo1": "data\\vctk\\wav48_silence_trimmed\\p240\\p240_037_mic2.flac",
+            "arquivo2": "data\\vctk\\wav48_silence_trimmed\\p228\\p228_337_mic2.flac",
+            "score": 0.4887167513370514,
+            "threshold": 0.3531748341863285,
+            "tipo_erro": "Falso Match (FM)"
+        }
+    ],
+    "falsos_non_matches": [
+        {
+            "arquivo1": "data\\vctk\\wav48_silence_trimmed\\p363\\p363_229_mic1.flac",
+            "arquivo2": "data\\vctk\\wav48_silence_trimmed\\p363\\p363_293_mic2.flac",
+            "score": 0.30679070949554443,
+            "threshold": 0.3531748341863285,
+            "tipo_erro": "Falso Non-Match (FNM)"
+        },
+        {
+            "arquivo1": "data\\vctk\\wav48_silence_trimmed\\p363\\p363_141_mic2.flac",
+            "arquivo2": "data\\vctk\\wav48_silence_trimmed\\p363\\p363_232_mic2.flac",
+            "score": 0.3272489011287689,
+            "threshold": 0.3531748341863285,
+            "tipo_erro": "Falso Non-Match (FNM)"
+        },
+        {
+            "arquivo1": "data\\vctk\\wav48_silence_trimmed\\p240\\p240_036_mic1.flac",
+            "arquivo2": "data\\vctk\\wav48_silence_trimmed\\p240\\p240_242_mic2.flac",
+            "score": 0.34096759557724,
+            "threshold": 0.3531748341863285,
+            "tipo_erro": "Falso Non-Match (FNM)"
+        }
+    ],
+    "total_fm": 52,
+    "total_fnm": 3,
+    "threshold": 0.3531748341863285
+}

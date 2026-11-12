@@ -491,8 +491,10 @@ class AudioPreprocessor:
         """
         Cepstral Mean Normalization (CMN): normaliza por utterance.
 
-        Subtrai a média e divide pelo desvio padrão ao longo do eixo
-        temporal (por canal mel), obtendo distribuição aproximada N(0,1).
+        Subtrai apenas a média ao longo do eixo temporal (por canal mel).
+        Equivale ao ``InputNormalization(norm_type='sentence', std_norm=False)``
+        do SpeechBrain — **não** se deve dividir pelo desvio (z-score), pois
+        isso colapsa os embeddings do ECAPA pré-treinado.
 
         Parameters
         ----------
@@ -505,10 +507,7 @@ class AudioPreprocessor:
             Tensor normalizado de shape ``(n_mels, T)``.
         """
         mean = spec.mean(dim=-1, keepdim=True)
-        std = spec.std(dim=-1, keepdim=True)
-        # Evitar divisão por zero
-        std = torch.clamp(std, min=1e-8)
-        return (spec - mean) / std
+        return spec - mean
 
 
 # ===========================================================================

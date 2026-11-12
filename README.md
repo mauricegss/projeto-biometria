@@ -50,7 +50,7 @@
 | **Resample** | 16 kHz mono |
 | **VAD WebRTC** | Agressividade 2 (fallback por energia) |
 | **Log-Mel Spectrogram** | 80 mel-banks, win=25 ms, hop=10 ms, n_fft=512 |
-| **Normalização** | Por utterance — CMN |
+| **Normalização** | Por utterance — CMN (subtração de média; sem divisão por desvio) |
 | **Duração mínima** | 1,0 s após VAD (arquivos mais curtos são FTA) |
 
 ---
@@ -163,10 +163,14 @@ Saídas em `protocols/<dataset>/`: `train_pairs.csv`, `val_genuine_pairs.csv`,
 ### 2. Extrair embeddings
 
 ```bash
-# Pesos pré-treinados (zero-shot)
+# Pesos pré-treinados (zero-shot) — só os arquivos citados nos pares do protocolo
 python extract_embeddings.py --dataset vctk \
     --data_dir data/vctk/wav48_silence_trimmed \
-    --output_dir embeddings/ --config config.yaml
+    --output_dir embeddings/ --config config.yaml \
+    --files_csv protocols/vctk/val_genuine_pairs.csv \
+                protocols/vctk/val_impostor_pairs.csv \
+                protocols/vctk/test_genuine_pairs.csv \
+                protocols/vctk/test_impostor_pairs.csv
 
 # A partir de um checkpoint fine-tuned (opcional)
 python extract_embeddings.py --dataset vctk \
@@ -210,23 +214,41 @@ python model.py   # verifica shapes, normalização L2, lens e a loss
 
 | ID | Nome | Status |
 |---|---|---|
-| **A** | Baseline VCTK (zero-shot) | pipeline pronto — aguarda dataset completo |
+| **A** | Baseline VCTK (zero-shot) | ✅ **Concluído** (03/11/2026) — `results/vctk/` |
 | **B** | Limiar adaptativo (DET) | parcial (threshold EER na validação já implementado) |
 | **C** | Cross-dataset (VCTK → LibriSpeech) | planejado — flag `--cross-dataset` a implementar |
 | **D** | Robustez a ruído (SNR 0–20 dB) | planejado — `evaluate_robustness.py` a implementar |
 | **E** | Ablação do pipeline (VAD/CMN/Mel) | planejado — `ablation_study.py` a implementar |
 
-### Resultados (preencher após execução)
+### Resultados — Experimento A (VCTK, zero-shot, 03/11/2026)
+
+Protocolo: 16 falantes val / 17 falantes test (split por identidade, seed 42).
+Threshold **congelado na validação** (EER val = 0,353) e aplicado ao teste.
+Arquivos em `results/vctk/` (`scores.csv`, `val_scores.csv`, `metrics.json`,
+`roc.png`, `distributions.png`, `error_analysis.json`).
 
 | Métrica | VCTK (Exp. A) | LibriSpeech (Exp. C) |
 |---|---|---|
-| **EER (%)** | — | — |
-| **AUC-ROC** | — | — |
-| **FMR @ threshold** | — | — |
-| **FNMR @ threshold** | — | — |
-| **TAR @ FAR=1%** | — | — |
-| **Inferência (ms/utt, CPU)** | ~51 (medido, smoke test) | — |
+| **EER (%)** | **1,36** | — |
+| **AUC-ROC** | **0,9991** | — |
+| **FMR @ threshold** | **1,08%** | — |
+| **FNMR @ threshold** | **1,81%** | — |
+| **TAR @ FAR=1%** | **96,99%** | — |
+| **d-prime** | 4,78 | — |
+| **Score genuíno médio** | 0,592 (n=166) | — |
+| **Score impostor médio** | 0,115 (n=4799) | — |
+| **Inferência (ms/utt, CPU)** | 107,5 ± 54,1 | — |
+| **FTA (pós-VAD < 1 s)** | 322 / 13.917 (2,3%) | — |
 | **Parâmetros** | 20.767.552 | 20.767.552 |
+| **Tamanho do modelo (MB)** | 79,2 | 79,2 |
+| **Hardware** | CPU AMD64 (sem GPU) | — |
+
+> **Nota (correção de bug):** a primeira execução do Exp. A acusou EER ≈ 40%
+> porque a "CMN" implementada fazia z-score (subtrai média **e** divide por
+> desvio). O SpeechBrain usa apenas subtração de média
+> (`std_norm=False`); com z-score os embeddings colapsavam (cosine ≈ 0,98
+> entre falantes distintos). Corrigido em `preprocess._cmn_normalize` e
+> todos os embeddings reextraídos.
 
 ---
 

@@ -589,6 +589,16 @@ def main() -> None:
         default="config.yaml",
         help="Caminho para o arquivo de configuração YAML.",
     )
+    parser.add_argument(
+        "--files_csv",
+        type=str,
+        nargs="+",
+        default=None,
+        help=(
+            "CSV(s) de pares do protocolo (ex.: val_genuine_pairs.csv). "
+            "Se fornecido, extrai apenas os arquivos citados nessas colunas."
+        ),
+    )
     args = parser.parse_args()
 
     # -------------------------------------------------------------------------
@@ -619,6 +629,21 @@ def main() -> None:
     # 7.4 Descoberta dos arquivos de áudio
     # -------------------------------------------------------------------------
     audio_files = _discover_audio_files(args.data_dir, args.dataset)
+
+    if args.files_csv:
+        wanted = set()
+        for csv_path in args.files_csv:
+            pairs_df = pd.read_csv(csv_path)
+            for col in pairs_df.columns:
+                for value in pairs_df[col].astype(str):
+                    if value.lower().endswith((".flac", ".wav")):
+                        wanted.add(str(Path(value)))
+        audio_files = [f for f in audio_files if str(Path(f)) in wanted]
+        logger.info(
+            "Filtro --files_csv: %d arquivo(s) único(s) nos CSVs → %d presente(s) no dataset",
+            len(wanted),
+            len(audio_files),
+        )
 
     if not audio_files:
         logger.error(

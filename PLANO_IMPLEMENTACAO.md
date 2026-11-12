@@ -49,6 +49,35 @@
 
 ---
 
+## 0.1 Status — Fase 1 / Experimento A (12/11/2026)
+
+- ✅ Downloads verificados (VCTK zip 133.135 entradas; LibriSpeech 29.966) e **extraídos**
+  - `data/vctk/wav48_silence_trimmed/` (109 falantes, 88.328 utterances)
+  - `data/librispeech/train-clean-100/` (251 falantes)
+- ✅ Protocolos VCTK seed 42: 76/16/17 falantes; val 160+5000 pares; test 170+5000 pares
+- ✅ Novo bug **C12 (crítico):** `_cmn_normalize` fazia **z-score** (média+desvio) e
+  **colapsava os embeddings** do ECAPA pré-treinado (cosine ≈ 0,98 entre falantes
+  distintos → EER ≈ 40%). O SpeechBrain usa `InputNormalization(std_norm=False)`
+  = só subtração de média. Corrigido; embeddings reextraídos.
+- ✅ Extração zero-shot com `--files_csv` (só os 13.917 arquivos dos pares):
+  **13.595 OK / 322 FTA** (áudio < 1 s pós-VAD), 107,5 ms/utt em CPU
+- ✅ **Exp. A concluído** (`results/vctk/`):
+
+| Métrica | Valor (teste) |
+|---|---|
+| EER | **1,36%** |
+| Threshold (congelado na val) | 0,353 (EER val = 0,353) |
+| FMR / FNMR @ threshold | 1,08% / 1,81% |
+| AUC-ROC | 0,9991 |
+| TAR @ FAR=1% | 96,99% |
+| d-prime | 4,78 |
+| N pares (test) | 166 genuínos / 4799 impostores |
+
+- ⏳ Pendências da Fase 1: análise de ≥3 FM + ≥3 FNM no artigo (dados já em
+  `results/vctk/error_analysis.json`)
+
+---
+
 ## 1. Onde está o plano de implementação?
 
 **Não havia.** A análise do repositório mostrou que o planejamento estava disperso em três fontes:
@@ -158,8 +187,8 @@ Este documento centraliza tudo: **o que foi feito, o que está quebrado, o que f
 
 ### 4.3 Dados
 
-- [ ] Baixar **VCTK** → `data/vctk/wav48_silence_trimmed/` (https://datashare.ed.ac.uk/handle/10283/3443) — ⏳ zip baixando em `data/vctk/VCTK-Corpus-0.92.zip`
-- [ ] Baixar **LibriSpeech train-clean-100** → `data/librispeech/train-clean-100/` (https://www.openslr.org/12) — ⏳ `data/librispeech/train-clean-100.tar.gz` baixando
+- [x] Download **VCTK** → `data/vctk/wav48_silence_trimmed/` — extraído em 12/11/2026
+- [x] Download **LibriSpeech train-clean-100** → `data/librispeech/train-clean-100/` — extraído em 12/11/2026
 - [ ] Baixar/gerar corpus de ruído para o Exp. D
 - [ ] Confirmar com a **Dupla 8** a troca dos protocolos de pares
 
@@ -185,12 +214,12 @@ Este documento centraliza tudo: **o que foi feito, o que está quebrado, o que f
 4. Corrigir README (caminhos `src/`, flags, scripts inexistentes) ✅
 5. Contatar Dupla 8 para alinhar protocolos compartilhados (Exp. B) 🔲
 
-### Fase 1 — Experimento A: baseline (dias 4–6: 06–08/11)
-1. `generate_protocols.py` para VCTK **+ gerar pares de validação** (corrige P1) 🔲
-2. `extract_embeddings.py` no VCTK (zero-shot) 🔲
-3. `evaluate.py` com **threshold congelado na validação** 🔲
-4. Preencher `results/vctk/` (scores.csv, metrics.json, roc.png, distributions.png) 🔲
-5. Validação do C1: confirmar se o modelo é realmente pré-treinado (senão, declarar treino do zero) 🔲
+### Fase 1 — Experimento A: baseline (dias 4–6: 06–08/11) — ✅ concluída em 12/11
+1. `generate_protocols.py` para VCTK **+ gerar pares de validação** (corrige P1) ✅
+2. `extract_embeddings.py` no VCTK (zero-shot) ✅ (13.595 embeddings via `--files_csv`)
+3. `evaluate.py` com **threshold congelado na validação** ✅
+4. Preencher `results/vctk/` (scores.csv, metrics.json, roc.png, distributions.png) ✅
+5. Validação do C1: confirmar se o modelo é realmente pré-treinado ✅ (231/231 tensores; EER 1,36% confirma)
 
 ### Fase 2 — Experimentos C, D, E (dias 7–11: 09–13/11)
 1. **Exp. C:** protocolo LibriSpeech + modo cross-dataset (modelo congelado, sem fine-tuning) 🔲
@@ -227,14 +256,14 @@ Este documento centraliza tudo: **o que foi feito, o que está quebrado, o que f
 
 ## 7. Checklist resumido da entrega
 
-- [ ] Pipeline reproduzível ponta a ponta (1 comando por etapa, sem `src/`)
-- [ ] Exp. A (VCTK) com métricas completas
+- [x] Pipeline reproduzível ponta a ponta (1 comando por etapa, sem `src/`)
+- [x] Exp. A (VCTK) com métricas completas — EER 1,36% (12/11/2026)
 - [ ] Exp. B (matriz 2 CNN × 2 datasets, com Dupla 8)
 - [ ] Exp. C (cross-dataset sem fine-tuning)
 - [ ] Exp. D (robustez, ≥4 níveis)
 - [ ] Exp. E (ablação)
 - [ ] ≥3 FM + ≥3 FNM analisados
-- [ ] scores.csv + metrics.json no repositório
+- [x] scores.csv + metrics.json no repositório (`results/vctk/`)
 - [ ] Artigo PDF 6–8 páginas
 - [ ] Apresentação 10 min
 - [ ] Tag `final-v1.0` + hash no README
