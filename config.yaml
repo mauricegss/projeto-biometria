@@ -69,6 +69,7 @@ robustness:
     - 20
     - 10
     - 5
+    - 0
   noise_data_path: data/noise/
 
 paths:

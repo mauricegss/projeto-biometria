@@ -201,6 +201,30 @@ class AudioPreprocessor:
         # 2. Leitura e resample
         waveform = self._load_and_resample(path)
 
+        return self.process_waveform(waveform, source=str(path))
+
+    def process_waveform(
+        self, waveform: torch.Tensor, source: str = "<memory>"
+    ) -> torch.Tensor:
+        """
+        Processa um waveform já carregado (1, N) e retorna o Log-Mel Spectrogram.
+
+        Usado pelo pipeline de robustez (Exp. D) para injetar áudio degradado
+        em memória sem regravar arquivos.
+
+        Parameters
+        ----------
+        waveform : torch.Tensor
+            Waveform 1-D de shape ``(1, N)`` em float32 (amostrado em
+            ``self.sample_rate``).
+        source : str
+            Identificador usado em mensagens de erro/log.
+
+        Returns
+        -------
+        torch.Tensor
+            Tensor ``(n_mels, T)`` com Log-Mel normalizado (CMN).
+        """
         # 3. VAD
         if self.vad_enabled:
             waveform = self._apply_vad(waveform)
@@ -211,7 +235,7 @@ class AudioPreprocessor:
             raise ValueError(
                 f"Áudio muito curto após VAD: "
                 f"{waveform.shape[-1] / self.sample_rate:.2f}s "
-                f"(mínimo={self.min_duration_sec}s) — arquivo: {audio_path}"
+                f"(mínimo={self.min_duration_sec}s) — arquivo: {source}"
             )
 
         # 5. Log-Mel Spectrogram

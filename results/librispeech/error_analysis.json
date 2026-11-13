@@ -1,0 +1,51 @@
+{
+    "falsos_matches": [
+        {
+            "arquivo1": "data\\librispeech\\train-clean-100\\328\\129766\\328-129766-0095.flac",
+            "arquivo2": "data\\librispeech\\train-clean-100\\40\\222\\40-222-0025.flac",
+            "score": 0.5899637937545776,
+            "threshold": 0.3531748341863285,
+            "tipo_erro": "Falso Match (FM)"
+        },
+        {
+            "arquivo1": "data\\librispeech\\train-clean-100\\8975\\270782\\8975-270782-0081.flac",
+            "arquivo2": "data\\librispeech\\train-clean-100\\4160\\14187\\4160-14187-0006.flac",
+            "score": 0.47987422347068787,
+            "threshold": 0.3531748341863285,
+            "tipo_erro": "Falso Match (FM)"
+        },
+        {
+            "arquivo1": "data\\librispeech\\train-clean-100\\2910\\131096\\2910-131096-0011.flac",
+            "arquivo2": "data\\librispeech\\train-clean-100\\198\\126831\\198-126831-0041.flac",
+            "score": 0.4685378074645996,
+            "threshold": 0.3531748341863285,
+            "tipo_erro": "Falso Match (FM)"
+        }
+    ],
+    "falsos_non_matches": [
+        {
+            "arquivo1": "data\\librispeech\\train-clean-100\\118\\121721\\118-121721-0003.flac",
+            "arquivo2": "data\\librispeech\\train-clean-100\\118\\47824\\118-47824-0074.flac",
+            "score": 0.08207598328590393,
+            "threshold": 0.3531748341863285,
+            "tipo_erro": "Falso Non-Match (FNM)"
+        },
+        {
+            "arquivo1": "data\\librispeech\\train-clean-100\\446\\123501\\446-123501-0015.flac",
+            "arquivo2": "data\\librispeech\\train-clean-100\\446\\123502\\446-123502-0041.flac",
+            "score": 0.0931849405169487,
+            "threshold": 0.3531748341863285,
+            "tipo_erro": "Falso Non-Match (FNM)"
+        },
+        {
+            "arquivo1": "data\\librispeech\\train-clean-100\\118\\121721\\118-121721-0006.flac",
+            "arquivo2": "data\\librispeech\\train-clean-100\\118\\47824\\118-47824-0072.flac",
+            "score": 0.14356744289398193,
+            "threshold": 0.3531748341863285,
+            "tipo_erro": "Falso Non-Match (FNM)"
+        }
+    ],
+    "total_fm": 92,
+    "total_fnm": 11,
+    "threshold": 0.3531748341863285
+}

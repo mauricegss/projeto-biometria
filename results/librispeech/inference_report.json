@@ -1,0 +1,22 @@
+{
+  "dataset": "librispeech",
+  "n_total": 11689,
+  "n_success": 11688,
+  "n_fta": 1,
+  "mean_inference_ms": 348.0071,
+  "std_inference_ms": 30.6716,
+  "total_elapsed_sec": 4493.22,
+  "hardware": {
+    "type": "CPU",
+    "name": "AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD"
+  },
+  "model_info": {
+    "n_params": 20767552,
+    "model_size_mb": 79.221923828125,
+    "embedding_dim": 192,
+    "architecture_name": "ECAPATDNN",
+    "pretrained_source": "speechbrain/spkrec-ecapa-voxceleb"
+  },
+  "batch_size": 32,
+  "checkpoint": null
+}

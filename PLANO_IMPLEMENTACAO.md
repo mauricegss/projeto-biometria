@@ -169,9 +169,9 @@ Este documento centraliza tudo: **o que foi feito, o que está quebrado, o que f
 |---|---|---|
 | **Exp. A** — baseline na base principal | ✅ | Concluído 12/11/2026 — EER 1,36% em `results/vctk/` |
 | **Exp. B** — 2 CNNs × 2 datasets | 🔴 | **Depende da Dupla 8** — isolado na Fase 5; compartilhar os mesmos `genuine_pairs.csv`/`impostor_pairs.csv` |
-| **Exp. C** — cross-dataset (VCTK→LibriSpeech, sem fine-tuning) | 🔴 | Modo `--cross-dataset` no `evaluate.py` + rodar no LibriSpeech |
-| **Exp. D** — robustez a ruído (mín. 4 níveis) | 🔴 | Script `robustness.py` **não existe** (baixar ruído: NOISE-ESC-58 / MUSAN / gerador de ruído branco) |
-| **Exp. E** — estudo de ablação (com/sem VAD, CMN, etc.) | 🔴 | Script de ablação **não existe** |
+| **Exp. C** — cross-dataset (VCTK→LibriSpeech, sem fine-tuning) | ✅ | Concluído 13/11 — threshold VCTK (0,353) → LibriSpeech; EER **0,64%** em `results/librispeech/` |
+| **Exp. D** — robustez a ruído (mín. 4 níveis) | ✅ | Concluído 13/11 — `evaluate_robustness.py`; white+babble × 20/10/5/0 dB; `results/vctk/robustness/` |
+| **Exp. E** — estudo de ablação (com/sem VAD, CMN) | ✅ | Concluído 13/11 — `ablation_study.py`; `results/vctk/ablation/` |
 | Fine-tuning + 3 seeds (média ± desvio) | 🔶 | `train.py` funcionando (smoke OK) — falta rodar no VCTK real (Fase 3) |
 | Análise de ≥3 FM + ≥3 FNM | 🔶 | Função existe (`analyze_errors`) — falta rodar e **discutir as causas** no artigo |
 | FTA (Failure to Acquire) | 🔶 | Contagem existe no preprocess/extract — falta reportar na tabela final |
@@ -180,16 +180,17 @@ Este documento centraliza tudo: **o que foi feito, o que está quebrado, o que f
 ### 4.2 Resultados
 
 - [x] `results/vctk/scores.csv` + `val_scores.csv` + `metrics.json` + `roc.png` + `distributions.png` (Exp. A, 12/11)
-- [ ] `results/librispeech/` (Exp. C)
-- [ ] Resultados Exp. D e E
-- [x] Tabela preenchida no README (Exp. A)
+- [x] `results/librispeech/` (Exp. C — 13/11)
+- [x] Resultados Exp. D (`results/vctk/robustness/`) e E (`results/vctk/ablation/`) — 13/11
+- [x] Tabela preenchida no README (Exp. A + C + D + E)
 - [ ] Arquivos finais para consolidado da disciplina (§25 do enunciado)
 
 ### 4.3 Dados
 
 - [x] Download **VCTK** → `data/vctk/wav48_silence_trimmed/` — extraído em 12/11/2026
 - [x] Download **LibriSpeech train-clean-100** → `data/librispeech/train-clean-100/` — extraído em 12/11/2026
-- [ ] Baixar/gerar corpus de ruído para o Exp. D
+- [x] Baixar VCTK e LibriSpeech → extraídos em 12/11/2026
+- [x] Corpus de ruído para Exp. D — white (gerado) + babble (mistura de utterances VCTK), 13/11/2026
 - [ ] Confirmar com a **Dupla 8** a troca dos protocolos de pares
 
 ### 4.4 Entrega formal
@@ -223,13 +224,15 @@ Este documento centraliza tudo: **o que foi feito, o que está quebrado, o que f
 3. Avaliação threshold congelado na validação ✅ → EER **1,36%**
 4. Bug C12 (CMN z-score colapsava embeddings) corrigido ✅
 
-### Fase 2 — Experimentos C, D, E (independente da Dupla 8) 🔲
-1. **Exp. C:** protocolos LibriSpeech + extração + modo cross-dataset
-   no `evaluate.py` (modelo congelado, sem fine-tuning) 🔲
-2. **Exp. D:** criar `evaluate_robustness.py` — ruído aditivo
-   (white, babble, music) × ≥4 SNRs (20/10/5/0 dB + original);
-   baixar/gerar corpus de ruído 🔲
-3. **Exp. E:** criar `ablation_study.py` (±VAD, ±CMN) 🔲
+### Fase 2 — Experimentos C, D, E (independente da Dupla 8) — ✅ concluída (13/11)
+1. **Exp. C:** protocolos LibriSpeech + extração (11.688 emb.) + flag
+   `--threshold_from` no `evaluate.py` (modelo congelado, sem fine-tuning)
+   ✅ → threshold VCTK 0,353 → LibriSpeech; **EER 0,64%**
+2. **Exp. D:** `evaluate_robustness.py` — white + babble × 20/10/5/0 dB
+   + original (9 condições); threshold congelado na val limpa ✅
+   → EER 1,36% (limpo) → 8,54% (white@0) → 39,06% (babble@0)
+3. **Exp. E:** `ablation_study.py` — full / no_vad / no_cmn / no_vad_no_cmn ✅
+   → EER 1,36 / 1,10 / 1,81 / 2,36%
 
 ### Fase 3 — Fine-tuning e reprodutibilidade (independente) 🔲
 1. Rodar `train.py` no VCTK real (encoder congelado, AAM-Softmax) 🔲
@@ -274,12 +277,12 @@ Este documento centraliza tudo: **o que foi feito, o que está quebrado, o que f
 **Independente (Fases 2–4):**
 - [x] Pipeline reproduzível ponta a ponta (1 comando por etapa, sem `src/`)
 - [x] Exp. A (VCTK) com métricas completas — EER 1,36% (12/11/2026)
-- [ ] Exp. C (cross-dataset sem fine-tuning)
-- [ ] Exp. D (robustez, ≥4 níveis)
-- [ ] Exp. E (ablação)
+- [x] Exp. C (cross-dataset sem fine-tuning) — EER 0,64% (13/11/2026)
+- [x] Exp. D (robustez, ≥4 níveis) — 9 condições (13/11/2026)
+- [x] Exp. E (ablação) — 4 variantes (13/11/2026)
 - [ ] Fine-tuning 3 seeds (média ± desvio)
 - [ ] ≥3 FM + ≥3 FNM analisados
-- [x] scores.csv + metrics.json no repositório (`results/vctk/`)
+- [x] scores.csv + metrics.json no repositório (`results/vctk/`, `results/librispeech/`)
 - [ ] Artigo PDF 6–8 páginas (versão sem Exp. B)
 - [ ] Apresentação 10 min (versão sem Exp. B)
 

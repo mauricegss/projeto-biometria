@@ -181,6 +181,28 @@ python extract_embeddings.py --dataset vctk \
 
 ### 3. Avaliar (Experimento A — baseline VCTK)
 
+```powershell
+python evaluate.py --dataset vctk
+```
+
+### 3b. Experimentos C, D e E (Fase 2)
+
+```powershell
+# Exp. C — cross-dataset: threshold do VCTK aplicado ao LibriSpeech
+python generate_protocols.py --dataset librispeech --data_dir data/librispeech/train-clean-100
+python extract_embeddings.py --dataset librispeech --data_dir data/librispeech/train-clean-100 `
+  --files_csv protocols/librispeech/test_genuine_pairs.csv protocols/librispeech/test_impostor_pairs.csv
+python evaluate.py --dataset librispeech --threshold_from results/vctk/metrics.json
+
+# Exp. D — robustez a ruído aditivo (≥4 níveis)
+python evaluate_robustness.py --dataset vctk --noise_types white babble --snr_levels 20 10 5 0
+
+# Exp. E — ablação do pré-processamento
+python ablation_study.py --dataset vctk --variants full no_vad no_cmn no_vad_no_cmn --reuse_full
+```
+
+### 4. Fine-tuning (opcional — Fase 3)
+
 ```bash
 python evaluate.py --dataset vctk \
     --embeddings_dir embeddings/ \
@@ -214,13 +236,13 @@ python model.py   # verifica shapes, normalização L2, lens e a loss
 
 | ID | Nome | Status |
 |---|---|---|
-| **A** | Baseline VCTK (zero-shot) | ✅ **Concluído** (03/11/2026) — `results/vctk/` |
-| **B** | Limiar adaptativo (DET) | parcial (threshold EER na validação já implementado) |
-| **C** | Cross-dataset (VCTK → LibriSpeech) | planejado — flag `--cross-dataset` a implementar |
-| **D** | Robustez a ruído (SNR 0–20 dB) | planejado — `evaluate_robustness.py` a implementar |
-| **E** | Ablação do pipeline (VAD/CMN/Mel) | planejado — `ablation_study.py` a implementar |
+| **A** | Baseline VCTK (zero-shot) | ✅ **Concluído** (12/11/2026) — `results/vctk/` |
+| **B** | 2 CNNs × 2 datasets (com Dupla 8) | ⏳ Fase 5 — depende da Dupla 8 |
+| **C** | Cross-dataset (VCTK → LibriSpeech) | ✅ **Concluído** (13/11/2026) — `results/librispeech/` |
+| **D** | Robustez a ruído (SNR 0–20 dB) | ✅ **Concluído** (13/11/2026) — `results/vctk/robustness/` |
+| **E** | Ablação do pipeline (VAD/CMN) | ✅ **Concluído** (13/11/2026) — `results/vctk/ablation/` |
 
-### Resultados — Experimento A (VCTK, zero-shot, 03/11/2026)
+### Resultados — Experimento A (VCTK, zero-shot, 12/11/2026)
 
 Protocolo: 16 falantes val / 17 falantes test (split por identidade, seed 42).
 Threshold **congelado na validação** (EER val = 0,353) e aplicado ao teste.
@@ -229,19 +251,65 @@ Arquivos em `results/vctk/` (`scores.csv`, `val_scores.csv`, `metrics.json`,
 
 | Métrica | VCTK (Exp. A) | LibriSpeech (Exp. C) |
 |---|---|---|
-| **EER (%)** | **1,36** | — |
-| **AUC-ROC** | **0,9991** | — |
-| **FMR @ threshold** | **1,08%** | — |
-| **FNMR @ threshold** | **1,81%** | — |
-| **TAR @ FAR=1%** | **96,99%** | — |
-| **d-prime** | 4,78 | — |
-| **Score genuíno médio** | 0,592 (n=166) | — |
-| **Score impostor médio** | 0,115 (n=4799) | — |
-| **Inferência (ms/utt, CPU)** | 107,5 ± 54,1 | — |
-| **FTA (pós-VAD < 1 s)** | 322 / 13.917 (2,3%) | — |
+| **EER (%)** | **1,36** | **0,64** |
+| **AUC-ROC** | **0,9991** | **0,9991** |
+| **FMR @ threshold** | **1,08%** | 1,84% |
+| **FNMR @ threshold** | **1,81%** | 0,44% |
+| **TAR @ FAR=1%** | **96,99%** | 99,44% |
+| **d-prime** | 4,78 | 6,73 |
+| **Score genuíno médio** | 0,592 (n=166) | 0,783 (n=2510) |
+| **Score impostor médio** | 0,115 (n=4799) | 0,106 (n=4998) |
+| **Inferência (ms/utt, CPU)** | 107,5 ± 54,1 | 348,0 ± 30,7 |
+| **FTA (pós-VAD < 1 s)** | 322 / 13.917 (2,3%) | 1 / 11.689 |
 | **Parâmetros** | 20.767.552 | 20.767.552 |
 | **Tamanho do modelo (MB)** | 79,2 | 79,2 |
-| **Hardware** | CPU AMD64 (sem GPU) | — |
+| **Hardware** | CPU AMD64 (sem GPU) | CPU AMD64 |
+
+> **Exp. C (cross-dataset):** threshold congelado no VCTK (0,3532) aplicado
+> ao LibriSpeech **sem novo fine-tuning** no destino (enunciado §11).
+> Embeddings extraídos com o mesmo modelo zero-shot; 7.508 pares avaliados
+> (1 FTA). Resultado em `results/librispeech/metrics.json`.
+
+### Resultados — Experimento D (robustez, 13/11/2026)
+
+Ruído aditivo **white** e **babble** em SNR ∈ {20, 10, 5, 0} dB + original
+(enunciado: ≥4 níveis). Threshold congelado na validação limpa (0,3532).
+Babble = mistura de 3–6 utterances de falantes do próprio VCTK.
+Script: `evaluate_robustness.py` · Saída: `results/vctk/robustness/`.
+
+| Condição | EER% | AUC | FMR% | FNMR% | TAR@1% |
+|---|---:|---:|---:|---:|---:|
+| original | **1,36** | 0,9991 | 1,08 | 1,81 | 96,99 |
+| white@20dB | 3,92 | 0,9944 | 1,03 | 7,19 | 92,81 |
+| white@10dB | 6,17 | 0,9879 | 1,45 | 8,03 | 90,12 |
+| white@5dB | 5,87 | 0,9831 | 3,53 | 8,82 | 81,18 |
+| white@0dB | 8,54 | 0,9748 | 6,04 | 12,94 | 62,35 |
+| babble@20dB | 4,75 | 0,9918 | 1,12 | 9,52 | 89,88 |
+| babble@10dB | 15,90 | 0,9174 | 1,86 | 38,82 | 54,12 |
+| babble@5dB | 27,52 | 0,8052 | 2,26 | 65,29 | 26,47 |
+| babble@0dB | 39,06 | 0,6530 | 2,90 | 87,06 | 6,47 |
+
+> **Leitura:** o modelo é razoavelmente robusto a ruído branco
+> (EER ≤ 8,5% mesmo a 0 dB) mas degrada fortemente com babble
+> (concorrentes fonéticos) — FNMR salta de 9,5% (20 dB) para 87% (0 dB).
+
+### Resultados — Experimento E (ablação, 13/11/2026)
+
+Variantes do pré-processamento; threshold congelado na validação **de cada
+variante** (anti-leak). Script: `ablation_study.py` ·
+Saída: `results/vctk/ablation/`.
+
+| Variante | EER% | AUC | FMR% | FNMR% | TAR@1% |
+|---|---:|---:|---:|---:|---:|
+| full (VAD+CMN) | **1,36** | 0,9991 | 1,08 | 1,81 | 96,99 |
+| no_vad | **1,10** | 0,9994 | 1,02 | 1,18 | 98,82 |
+| no_cmn | 1,81 | 0,9984 | 2,48 | 1,20 | 96,39 |
+| no_vad_no_cmn | 2,36 | 0,9973 | 2,56 | 1,76 | 95,29 |
+
+> **Leitura:** CMN contribui claramente (remover piora EER 1,36→1,81).
+> O VAD neste protocolo (utterances já trimmed) não ajuda e até atrapalha
+> levemente — provavelmente por descartar duração útil em frases curtas.
+> Sem as duas etapas o EER sobe para 2,36% (~1,7× o baseline).
 
 > **Nota (correção de bug):** a primeira execução do Exp. A acusou EER ≈ 40%
 > porque a "CMN" implementada fazia z-score (subtrai média **e** divide por

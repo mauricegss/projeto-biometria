@@ -82,8 +82,9 @@ def compute_scores(
     missing = set()
 
     for _, row in pairs_df.iterrows():
-        a1 = row["amostra_1"]
-        a2 = row["amostra_2"]
+        # Normaliza separadores de caminho (\ vs /) para casar com o índice
+        a1 = str(Path(str(row["amostra_1"])))
+        a2 = str(Path(str(row["amostra_2"])))
         tipo = row["tipo"]
 
         if a1 not in embeddings_dict:
@@ -620,7 +621,7 @@ def load_embeddings(embeddings_dir: str, dataset: str) -> Dict[str, np.ndarray]:
     key_col = "file_path" if "file_path" in index_df.columns else "arquivo"
 
     for _, row in index_df.iterrows():
-        key = row[key_col]
+        key = str(Path(str(row[key_col])))  # normaliza separadores (\ vs /)
         emb_path = Path(str(row["embedding_path"]))
 
         # Candidatos: caminho como está (abs/relativo ao cwd), relativo ao
@@ -816,6 +817,16 @@ def main() -> None:
         help="Threshold pré-definido. Se omitido, calcula no conjunto de validação.",
     )
     parser.add_argument(
+        "--threshold_from",
+        type=str,
+        default=None,
+        help=(
+            "Caminho para metrics.json de OUTRO dataset (cross-dataset). "
+            "Carrega threshold_usado da base de origem e aplica na destino, "
+            "sem recalcular na validação da destino (enunciado §11/§13)."
+        ),
+    )
+    parser.add_argument(
         "--config",
         type=str,
         default="config.yaml",
@@ -848,6 +859,16 @@ def main() -> None:
 
     # --- 4. Define threshold ---
     threshold = args.val_threshold
+    threshold_origin = None
+    if threshold is None and args.threshold_from:
+        tf_path = Path(args.threshold_from)
+        if not tf_path.exists():
+            raise FileNotFoundError(f"metrics.json de origem não encontrado: {tf_path}")
+        with open(tf_path, "r", encoding="utf-8") as f:
+            src_metrics = json.load(f)
+        threshold = float(src_metrics.get("threshold_usado", src_metrics.get("threshold_at_eer")))
+        threshold_origin = str(tf_path)
+        print(f"[ETAPA 3] Threshold CROSS-DATASET de {tf_path}: {threshold:.6f}")
     if threshold is None:
         print(f"\n[ETAPA 3] Calculando threshold no conjunto de validação...")
         try:
@@ -869,7 +890,7 @@ def main() -> None:
             print("[INFO] Threshold será calculado diretamente no conjunto de teste (EER).")
             threshold = None  # será definido após compute_metrics
     else:
-        print(f"[ETAPA 3] Usando threshold fornecido: {threshold}")
+        print(f"[ETAPA 3] Usando threshold: {threshold}")
 
     # --- 5. Calcula scores no teste ---
     print(f"\n[ETAPA 4] Calculando scores no conjunto de teste...")
@@ -918,7 +939,10 @@ def main() -> None:
     )
 
     # --- 8. Salva métricas ---
-    print(f"\n[ETAPA 7] Salvando métricas...")
+    print(f"[ETAPA 7] Salvando métricas...")
+    if threshold_origin:
+        metrics["threshold_origin"] = threshold_origin
+        metrics["threshold_cross_dataset"] = True
     save_metrics(metrics, output_path=str(results_path / "metrics.json"))
 
     # --- 9. Analisa erros ---
