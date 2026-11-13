@@ -38,7 +38,7 @@
   venv), `LICENSE` (MIT), `config.yaml` (`n_parameters: 20767552`)
 - ⏳ **Downloads em background:** VCTK zip + LibriSpeech tar.gz (verificar
   tamanho/extração)
-- ⏳ Contatar Dupla 8 (protocolos do Exp. B)
+- [ ] Contatar Dupla 8 (protocolos do Exp. B) — movido para a **Fase 5**
 
 ### Repo Git
 
@@ -167,22 +167,22 @@ Este documento centraliza tudo: **o que foi feito, o que está quebrado, o que f
 
 | Item do enunciado | Status | Falta |
 |---|---|---|
-| **Exp. A** — baseline na base principal | 🔶 | Rodar pipeline zero-shot no VCTK e gerar `scores.csv` + `metrics.json` |
-| **Exp. B** — 2 CNNs × 2 datasets | 🔴 | **Depende da Dupla 8**: compartilhar os mesmos `genuine_pairs.csv`/`impostor_pairs.csv` (o código já prevê isso em `generate_protocols.py`) |
+| **Exp. A** — baseline na base principal | ✅ | Concluído 12/11/2026 — EER 1,36% em `results/vctk/` |
+| **Exp. B** — 2 CNNs × 2 datasets | 🔴 | **Depende da Dupla 8** — isolado na Fase 5; compartilhar os mesmos `genuine_pairs.csv`/`impostor_pairs.csv` |
 | **Exp. C** — cross-dataset (VCTK→LibriSpeech, sem fine-tuning) | 🔴 | Modo `--cross-dataset` no `evaluate.py` + rodar no LibriSpeech |
 | **Exp. D** — robustez a ruído (mín. 4 níveis) | 🔴 | Script `robustness.py` **não existe** (baixar ruído: NOISE-ESC-58 / MUSAN / gerador de ruído branco) |
 | **Exp. E** — estudo de ablação (com/sem VAD, CMN, etc.) | 🔴 | Script de ablação **não existe** |
-| Fine-tuning + 3 seeds (média ± desvio) | 🔴 | `train.py` existe mas está **quebrado** (bugs C2–C8) |
+| Fine-tuning + 3 seeds (média ± desvio) | 🔶 | `train.py` funcionando (smoke OK) — falta rodar no VCTK real (Fase 3) |
 | Análise de ≥3 FM + ≥3 FNM | 🔶 | Função existe (`analyze_errors`) — falta rodar e **discutir as causas** no artigo |
 | FTA (Failure to Acquire) | 🔶 | Contagem existe no preprocess/extract — falta reportar na tabela final |
 | Eficiência (parâmetros, tamanho, ms/utt, hardware) | 🔶 | Coletado em `inference_report.json` — falta preencher a tabela do README/artigo |
 
-### 4.2 Resultados (diretório `results/` está **vazio**)
+### 4.2 Resultados
 
-- [ ] `results/{vctk,librispeech}/scores.csv`
-- [ ] `results/{vctk,librispeech}/metrics.json`
-- [ ] `roc.png`, `distributions.png`
-- [ ] Tabela preenchida no README (EER, AUC, FMR, FNMR, TAR@FAR=1%, tempo, hardware)
+- [x] `results/vctk/scores.csv` + `val_scores.csv` + `metrics.json` + `roc.png` + `distributions.png` (Exp. A, 12/11)
+- [ ] `results/librispeech/` (Exp. C)
+- [ ] Resultados Exp. D e E
+- [x] Tabela preenchida no README (Exp. A)
 - [ ] Arquivos finais para consolidado da disciplina (§25 do enunciado)
 
 ### 4.3 Dados
@@ -194,52 +194,68 @@ Este documento centraliza tudo: **o que foi feito, o que está quebrado, o que f
 
 ### 4.4 Entrega formal
 
-- [ ] **Artigo científico 6–8 páginas** (template SBC/IEEE) — não iniciado
+- [ ] **Artigo científico 6–8 páginas** (template SBC/IEEE) — versão sem Exp. B na Fase 4; final na Fase 5
 - [ ] **Apresentação 10 min** + arguição 5 min — não iniciada
 - [x] Repositório Git: `git init` + remote GitHub (`mauricegss/projeto-biometria`, público) — 03/11/2026
-- [ ] Tag `final-v1.0` com hash no README (somente no commit de entrega)
+- [ ] Tag `final-v1.0` com hash no README — **Fase 5** (congelamento final com Exp. B)
 - [x] `LICENSE` (MIT) — criado em 03/11/2026
-- [ ] Preencher: hardware, data de entrega, versão, hash do commit (README já com data 18/25/11)
+- [x] Data de entrega no README (18 ou 25/11/2026) e eficiência do Exp. A preenchidas
 
 ---
 
 ## 5. Plano de ação até a entrega
 
-**Hoje: 03/11/2026 · Entregas: 18/11 ou 25/11/2026 → janela de 15–22 dias**
+**Hoje: 12/11/2026 · Entregas: 18/11 ou 25/11/2026**
 
-### Fase 0 — Fundação (dias 1–3: 03–05/11)
-1. `git init` + primeiro commit + remote (GitHub) ✅ (03/11: repo público `mauricegss/projeto-biometria`)
-2. Corrigir bugs críticos **C1–C10** (prioridade: `model.py`, `train.py`, `evaluate.py`) ✅ (+ C11 torchaudio/torchcodec)
-3. Baixar VCTK e LibriSpeech ⏳ (downloads em background)
-4. Corrigir README (caminhos `src/`, flags, scripts inexistentes) ✅
-5. Contatar Dupla 8 para alinhar protocolos compartilhados (Exp. B) 🔲
+> **Regra de dependência:** tudo que exige a **Dupla 8** (Exp. B e o
+> congelamento final do documento com os resultados B) está isolado na
+> **Fase 5**. As Fases 2–4 avançam 100% sem eles.
 
-### Fase 1 — Experimento A: baseline (dias 4–6: 06–08/11) — ✅ concluída em 12/11
-1. `generate_protocols.py` para VCTK **+ gerar pares de validação** (corrige P1) ✅
-2. `extract_embeddings.py` no VCTK (zero-shot) ✅ (13.595 embeddings via `--files_csv`)
-3. `evaluate.py` com **threshold congelado na validação** ✅
-4. Preencher `results/vctk/` (scores.csv, metrics.json, roc.png, distributions.png) ✅
-5. Validação do C1: confirmar se o modelo é realmente pré-treinado ✅ (231/231 tensores; EER 1,36% confirma)
+### Fase 0 — Fundação (03–05/11) — ✅ concluída
+1. `git init` + commit + remote GitHub ✅
+2. Corrigir bugs críticos **C1–C11** ✅
+3. Baixar VCTK e LibriSpeech ✅ (extraídos em 12/11)
+4. Corrigir README / LICENSE / requirements ✅
 
-### Fase 2 — Experimentos C, D, E (dias 7–11: 09–13/11)
-1. **Exp. C:** protocolo LibriSpeech + modo cross-dataset (modelo congelado, sem fine-tuning) 🔲
-2. **Exp. D:** criar `robustness.py` — ruído aditivo (white, babble, music) × ≥4 SNRs (ex.: 20/10/5/0 dB + original) 🔲
-3. **Exp. E:** criar script de ablação (com/sem VAD, com/sem CMN, com/sem normalização de amplitude) 🔲
-4. Consolidar protocolos com a Dupla 8 (Exp. B) 🔲
+### Fase 1 — Experimento A: baseline VCTK (06–12/11) — ✅ concluída
+1. Protocolos com pares de validação (anti-leak) ✅
+2. Embeddings zero-shot (13.595) ✅
+3. Avaliação threshold congelado na validação ✅ → EER **1,36%**
+4. Bug C12 (CMN z-score colapsava embeddings) corrigido ✅
 
-### Fase 3 — Fine-tuning e reprodutibilidade (dias 10–14: 12–16/11, paralelo)
-1. Consertar `train.py` e rodar fine-tuning (encoder congelado, AAM-Softmax) 🔲
+### Fase 2 — Experimentos C, D, E (independente da Dupla 8) 🔲
+1. **Exp. C:** protocolos LibriSpeech + extração + modo cross-dataset
+   no `evaluate.py` (modelo congelado, sem fine-tuning) 🔲
+2. **Exp. D:** criar `evaluate_robustness.py` — ruído aditivo
+   (white, babble, music) × ≥4 SNRs (20/10/5/0 dB + original);
+   baixar/gerar corpus de ruído 🔲
+3. **Exp. E:** criar `ablation_study.py` (±VAD, ±CMN) 🔲
+
+### Fase 3 — Fine-tuning e reprodutibilidade (independente) 🔲
+1. Rodar `train.py` no VCTK real (encoder congelado, AAM-Softmax) 🔲
 2. 3 seeds (42, 123, 2026) → média ± desvio-padrão de EER 🔲
-3. Reavaliar Exp. A com o melhor checkpoint (comparar zero-shot vs fine-tuned) 🔲
-4. Preencher eficiência: parâmetros, tamanho do modelo, ms/utt, hardware 🔲
+3. Reavaliar Exp. A com o melhor checkpoint (zero-shot vs fine-tuned) 🔲
+4. Consolidar eficiência: parâmetros, tamanho, ms/utt, hardware 🔲
 
-### Fase 4 — Artigo e apresentação (dias 13–20: 15–22/11)
-1. Esboço do artigo (8 seções exigidas no enunciado §21) 🔲
-2. Figuras obrigatórias: pipeline real, espectrograma, distribuição de scores com threshold, ROC, robustez, ablação 🔲
-3. Análise de erros com hipóteses técnicas (ruído, canal, duração, condição vocal) 🔲
+### Fase 4 — Artigo e apresentação, versão sem Exp. B (independente) 🔲
+1. Esboço do artigo (8 seções do enunciado §21) com resultados A, C, D, E 🔲
+2. Figuras: pipeline, espectrograma, distribuição+threshold, ROC,
+   robustez, ablação 🔲
+3. Análise de ≥3 FM + ≥3 FNM com hipóteses técnicas 🔲
+4. Slides da apresentação 🔲
+5. Seção do Exp. B deixada como *“protocolos em consolidação com a
+   Dupla 8”* até a Fase 5 🔲
+   > Obs.: a **entrega final** do documento só é congelada na Fase 5
+   > (precisa dos resultados B) — aqui sai a versão completa possível
+   > sem a outra dupla.
+
+### Fase 5 — Dupla 8: Exp. B + congelamento final (bloqueada) 🔲
+1. Contatar Dupla 8 e trocar `genuine_pairs.csv` / `impostor_pairs.csv` 🔲
+2. Rodar a matriz **2 CNN × 2 datasets** com os protocolos compartilhados 🔲
+3. Inserir resultados do Exp. B no artigo e nos slides 🔲
 4. Limitações e comparação com a Dupla 8 🔲
-5. Slides (problema → dataset → pipeline → CNN → embedding → matching → protocolo → resultados → cross-dataset → robustez → erros → conclusões) 🔲
-6. **Congelamento:** tag `final-v1.0` + hash no README + submeter scores.csv/metrics.json 🔲
+5. **Congelamento:** tag `final-v1.0` + hash no README + submeter
+   `scores.csv`/`metrics.json` 🔲
 
 ---
 
@@ -247,23 +263,27 @@ Este documento centraliza tudo: **o que foi feito, o que está quebrado, o que f
 
 | Risco | Impacto | Mitigação |
 |---|---|---|
-| Pesos SpeechBrain não transferem para o modelo custom (C1) | Alto — inviabiliza o "zero-shot" | Mapear state_dict para as camadas equivalentes **ou** declarar no artigo que o treino é do zero (resultado negativo é válido, §29.18) |
-| Sem GPU / datasets grandes demais | Médio | Usar subconjunto do VCTK (ex.: 40 falantes) já no protocolo, mantendo splits por identidade |
-| Dupla 8 atrasar os protocolos | Alto — trava Exp. B | Gerar protocolos o quanto antes e enviar |
-| Prazo 18/11 | Alto | Priorizar Fases 0–1 + artigo; fine-tuning e ablação podem ficar para a semana 2 se necessário |
+| Dupla 8 atrasar/sumir | Alto — só trava a **Fase 5** (Exp. B + tag final) | Fases 2–4 independentes; se não responderem até 16/11, entregar sem Exp. B e justificar no artigo |
+| Sem GPU / datasets grandes | Médio | CPU com `--files_csv` (só pares) já resolveu Exp. A |
+| Prazo 18/11 | Alto | Priorizar Fases 2–4; Fase 5 só se houver resposta da Dupla 8 |
 
 ---
 
 ## 7. Checklist resumido da entrega
 
+**Independente (Fases 2–4):**
 - [x] Pipeline reproduzível ponta a ponta (1 comando por etapa, sem `src/`)
 - [x] Exp. A (VCTK) com métricas completas — EER 1,36% (12/11/2026)
-- [ ] Exp. B (matriz 2 CNN × 2 datasets, com Dupla 8)
 - [ ] Exp. C (cross-dataset sem fine-tuning)
 - [ ] Exp. D (robustez, ≥4 níveis)
 - [ ] Exp. E (ablação)
+- [ ] Fine-tuning 3 seeds (média ± desvio)
 - [ ] ≥3 FM + ≥3 FNM analisados
 - [x] scores.csv + metrics.json no repositório (`results/vctk/`)
-- [ ] Artigo PDF 6–8 páginas
-- [ ] Apresentação 10 min
-- [ ] Tag `final-v1.0` + hash no README
+- [ ] Artigo PDF 6–8 páginas (versão sem Exp. B)
+- [ ] Apresentação 10 min (versão sem Exp. B)
+
+**Depende da Dupla 8 (Fase 5):**
+- [ ] Exp. B (matriz 2 CNN × 2 datasets, protocolos compartilhados)
+- [ ] Resultados B inseridos no artigo e slides
+- [ ] Tag `final-v1.0` + hash no README (congelamento final)
