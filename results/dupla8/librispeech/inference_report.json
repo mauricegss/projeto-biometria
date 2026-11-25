@@ -1,0 +1,22 @@
+{
+  "dataset": "librispeech",
+  "n_total": 4444,
+  "n_success": 4444,
+  "n_fta": 0,
+  "mean_inference_ms": 708.6082,
+  "std_inference_ms": 40.0807,
+  "total_elapsed_sec": 3275.13,
+  "hardware": {
+    "type": "CPU",
+    "name": "Intel(R) Core(TM) i5-10400F CPU @ 2.90GHz (lscpu)"
+  },
+  "model_info": {
+    "n_params": 20767552,
+    "model_size_mb": 79.221923828125,
+    "embedding_dim": 192,
+    "architecture_name": "ECAPATDNN",
+    "pretrained_source": "speechbrain/spkrec-ecapa-voxceleb"
+  },
+  "batch_size": 32,
+  "checkpoint": null
+}

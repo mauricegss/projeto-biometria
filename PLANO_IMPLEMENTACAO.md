@@ -168,7 +168,7 @@ Este documento centraliza tudo: **o que foi feito, o que está quebrado, o que f
 | Item do enunciado | Status | Falta |
 |---|---|---|
 | **Exp. A** — baseline na base principal | ✅ | Concluído 12/11/2026 — EER 1,36% em `results/vctk/` |
-| **Exp. B** — 2 CNNs × 2 datasets | 🔴 | **Depende da Dupla 8** — isolado na Fase 5; compartilhar os mesmos `genuine_pairs.csv`/`impostor_pairs.csv` |
+| **Exp. B** — 2 CNNs × 2 datasets | ✅ | Nossa parte concluída 25/11 — pares da Dupla 8 no LibriSpeech; EER **0,68%** em `results/dupla8/librispeech/` |
 | **Exp. C** — cross-dataset (VCTK→LibriSpeech, sem fine-tuning) | ✅ | Concluído 13/11 — threshold VCTK (0,353) → LibriSpeech; EER **0,64%** em `results/librispeech/` |
 | **Exp. D** — robustez a ruído (mín. 4 níveis) | ✅ | Concluído 13/11 — `evaluate_robustness.py`; white+babble × 20/10/5/0 dB; `results/vctk/robustness/` |
 | **Exp. E** — estudo de ablação (com/sem VAD, CMN) | ✅ | Concluído 13/11 — `ablation_study.py`; `results/vctk/ablation/` |
@@ -191,7 +191,7 @@ Este documento centraliza tudo: **o que foi feito, o que está quebrado, o que f
 - [x] Download **LibriSpeech train-clean-100** → `data/librispeech/train-clean-100/` — extraído em 12/11/2026
 - [x] Baixar VCTK e LibriSpeech → extraídos em 12/11/2026
 - [x] Corpus de ruído para Exp. D — white (gerado) + babble (mistura de utterances VCTK), 13/11/2026
-- [ ] Confirmar com a **Dupla 8** a troca dos protocolos de pares
+- [x] Troca dos protocolos de pares com a **Dupla 8** — 24/11/2026 (ela usa os nossos de VCTK; nós, os dela de LibriSpeech)
 
 ### 4.4 Entrega formal
 
@@ -253,8 +253,8 @@ Este documento centraliza tudo: **o que foi feito, o que está quebrado, o que f
    > sem a outra dupla.
 
 ### Fase 5 — Dupla 8: Exp. B + congelamento final (bloqueada) 🔲
-1. Contatar Dupla 8 e trocar `genuine_pairs.csv` / `impostor_pairs.csv` 🔲
-2. Rodar a matriz **2 CNN × 2 datasets** com os protocolos compartilhados 🔲
+1. Contatar Dupla 8 e trocar `genuine_pairs.csv` / `impostor_pairs.csv` ✅ (24/11)
+2. Rodar a matriz **2 CNN × 2 datasets** com os protocolos compartilhados ✅ nossa parte (25/11, EER 0,68% no LibriSpeech)
 3. Inserir resultados do Exp. B no artigo e nos slides 🔲
 4. Limitações e comparação com a Dupla 8 🔲
 5. **Congelamento:** tag `final-v1.0` + hash no README + submeter
@@ -287,6 +287,6 @@ Este documento centraliza tudo: **o que foi feito, o que está quebrado, o que f
 - [ ] Apresentação 10 min (versão sem Exp. B)
 
 **Depende da Dupla 8 (Fase 5):**
-- [ ] Exp. B (matriz 2 CNN × 2 datasets, protocolos compartilhados)
+- [x] Exp. B (matriz 2 CNN × 2 datasets, protocolos compartilhados) — nossa parte, 25/11/2026
 - [ ] Resultados B inseridos no artigo e slides
 - [ ] Tag `final-v1.0` + hash no README (congelamento final)
