@@ -24,7 +24,7 @@
 
 // 1
 #align(center + horizon)[
-  #text(size: 32pt, fill: rgb("#1f4e79"))[*Verificação de locutor com ECAPA-TDNN*]
+  #text(size: 32pt, fill: rgb("#1f4e79"))[*ECAPA-TDNN Pré-Treinada para Verificação de Locutor*]
   #v(0.2em)
   #text(size: 20pt)[VCTK, LibriSpeech e comparação com a ResNet-34 da Dupla 8]
   #v(1em)

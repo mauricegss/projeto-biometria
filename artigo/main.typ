@@ -7,7 +7,7 @@
 #set text(lang: "pt", region: "br")
 
 #show: ieee.with(
-  title: [Verificação de Locutor com ECAPA-TDNN Pré-Treinada: Avaliação no VCTK, no LibriSpeech e Comparação com uma ResNet-34],
+  title: [ECAPA-TDNN Pré-Treinada para Verificação de Locutor],
   authors: (
     (name: "Luiza Baldoqui", organization: [Universidade Tecnológica Federal do Paraná], location: [Ponta Grossa, Brasil]),
     (name: "Maurice Santos", organization: [Universidade Tecnológica Federal do Paraná], location: [Ponta Grossa, Brasil]),
