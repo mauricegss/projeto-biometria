@@ -8,9 +8,7 @@
 
 ---
 
-> **Entrega:** artigo em [`artigo/artigo.pdf`](artigo/artigo.pdf) ·
-> apresentação em [`apresentacao/apresentacao.pdf`](apresentacao/apresentacao.pdf) ·
-> versão avaliada: tag `final-v1.0`.
+> **Versão avaliada:** tag `final-v1.0`.
 
 ## Informações do Projeto
 
@@ -143,8 +141,6 @@ Requisitos: **Python ≥ 3.10** (testado em 3.13), CPU funciona; GPU opcional (C
 ├── ablation_study.py       # Exp. E (VAD/CMN)
 ├── import_dupla8_protocols.py  # Exp. B: pares de LibriSpeech da Dupla 8
 ├── make_paper_figures.py   # figuras e tabelas do artigo (results/paper/)
-├── artigo/                 # artigo (Typst, modelo IEEE) e PDF
-├── apresentacao/           # slides (Typst) e PDF
 ├── config.yaml             # configuração central
 ├── requirements.txt
 ├── PLANO_IMPLEMENTACAO.md  # status e plano até a entrega
@@ -249,16 +245,11 @@ python train.py --dataset vctk \
 > artigo são do modelo pré-treinado (zero-shot). O caminho está implementado e
 > passou no smoke test, e fica como trabalho futuro (ver Limitações no artigo).
 
-### 4b. Figuras, artigo e apresentação
+### 4b. Figuras e análise de erros do artigo
 
 ```bash
-# análise de erros e figuras do artigo (precisa do LibriSpeech e de
-# data/vctk/speaker-info.txt, que vem na raiz do zip do VCTK)
+# precisa do LibriSpeech e de data/vctk/speaker-info.txt (raiz do zip do VCTK)
 python make_paper_figures.py
-
-# compilar artigo e slides (pip install typst, ou o binário typst)
-python -c "import typst; typst.compile('artigo/main.typ', output='artigo/artigo.pdf', root='.')"
-python -c "import typst; typst.compile('apresentacao/main.typ', output='apresentacao/apresentacao.pdf', root='.')"
 ```
 
 ### 5. Auto-teste rápido do modelo
