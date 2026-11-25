@@ -218,7 +218,7 @@ python evaluate_robustness.py --dataset vctk --noise_types white babble --snr_le
 python ablation_study.py --dataset vctk --variants full no_vad no_cmn no_vad_no_cmn --reuse_full
 ```
 
-### 4. Fine-tuning (opcional — Fase 3)
+### 3c. Avaliação com todos os argumentos
 
 ```bash
 python evaluate.py --dataset vctk \
@@ -346,7 +346,7 @@ Script: `evaluate_robustness.py` · Saída: `results/vctk/robustness/`.
 |---|---:|---:|---:|---:|---:|
 | original | **1,36** | 0,9991 | 1,08 | 1,81 | 96,99 |
 | white@20dB | 3,92 | 0,9944 | 1,03 | 7,19 | 92,81 |
-| white@10dB | 6,17 | 0,9879 | 1,45 | 8,03 | 90,12 |
+| white@10dB | 6,17 | 0,9879 | 1,45 | 8,02 | 90,12 |
 | white@5dB | 5,87 | 0,9831 | 3,53 | 8,82 | 81,18 |
 | white@0dB | 8,54 | 0,9748 | 6,04 | 12,94 | 62,35 |
 | babble@20dB | 4,75 | 0,9918 | 1,12 | 9,52 | 89,88 |
@@ -398,21 +398,30 @@ validação) e paths. Os scripts aceitam overrides por CLI (`--epochs`,
 
 | Uso | Seed |
 |---|---|
-| Experimento principal | `42` |
-| Validação cruzada | `123` |
-| Reprodução alternativa | `2026` |
+| Divisão por locutor, pares de avaliação e ruído | `42` |
+| Fine-tuning (implementado, não executado) | `42`, `123`, `2026` |
+
+Todos os resultados do artigo usam só a seed `42`. Como o modelo é usado sem
+fine-tuning, a extração de embeddings é determinística.
 
 ---
 
 ## Hardware e Software
 
-| Componente | Versão |
+| Experimentos | Hardware | Sistema e Python |
+|---|---|---|
+| A, C, D e E | CPU AMD Zen 3 (AMD64 Family 25 Model 80), sem GPU | Windows, Python 3.13 |
+| B | CPU Intel Core i5-10400F @ 2,90 GHz, sem GPU | Linux, Python 3.12 |
+
+| Biblioteca | Versão |
 |---|---|
-| Python | 3.13 (testado) |
 | PyTorch | 2.12.1 (CPU) |
 | torchaudio | 2.11.1 |
 | SpeechBrain | 1.1.2 |
-| GPU | pendente (pipeline roda em CPU) |
+
+Para conferir a troca de máquina, 200 pares do Exp. C foram reextraídos na
+segunda máquina. A maior diferença de score foi 0,0014, sem mudança de decisão.
+Os tempos de inferência estão em `results/*/inference_report.json`.
 
 ---
 
@@ -425,7 +434,7 @@ validação) e paths. Os scripts aceitam overrides por CLI (`--epochs`,
 5. **Panayotov, V., Chen, G., Povey, D., & Khudanpur, S.** (2015). LibriSpeech: An ASR corpus based on public domain audio books. *ICASSP 2015*.
 6. **Yamagishi, J., Veaux, C., & MacDonald, K.** (2019). CSTR VCTK Corpus (version 0.92). *University of Edinburgh*. https://doi.org/10.7488/ds/2645
 7. **Snyder, D., Garcia-Romero, D., Sell, G., Povey, D., & Khudanpur, S.** (2018). X-Vectors: Robust DNN Embeddings for Speaker Recognition. *ICASSP 2018*.
-8. **ISO/IEC 19795-1:2006** — Biometric performance testing and reporting — Part 1: Principles and framework.
+8. **ISO/IEC 19795-1:2021** — Information technology — Biometric performance testing and reporting — Part 1: Principles and framework.
 
 ---
 
