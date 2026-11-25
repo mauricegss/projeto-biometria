@@ -1,0 +1,33 @@
+{
+    "eer": 0.0068289473684210525,
+    "threshold_at_eer": 0.37510886648791547,
+    "threshold_usado": 0.3531748341863285,
+    "fmr": 0.011131578947368421,
+    "fnmr": 0.004736842105263158,
+    "auc": 0.9995081682825485,
+    "tar_at_far_001": 0.9947368421052631,
+    "d_prime": 6.74995306381764,
+    "distribuicao_genuinos": {
+        "min": 0.14782355725765228,
+        "max": 0.9419423341751099,
+        "mean": 0.7772014146180529,
+        "std": 0.1043871510922071,
+        "n": 3800
+    },
+    "distribuicao_impostores": {
+        "min": -0.20145320892333984,
+        "max": 0.549552857875824,
+        "mean": 0.10307666028581412,
+        "std": 0.09514077530618208,
+        "n": 38000
+    },
+    "threshold_origin": "results/vctk/metrics.json",
+    "threshold_cross_dataset": true,
+    "roc_resumo": {
+        "n_pontos": 174,
+        "fpr_min": 0.0,
+        "fpr_max": 1.0,
+        "tpr_min": 0.0,
+        "tpr_max": 1.0
+    }
+}

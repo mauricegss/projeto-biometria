@@ -1,0 +1,46 @@
+{
+  "speaker_6209": {
+    "utterances_abaixo_do_threshold": [
+      9,
+      29,
+      31,
+      32,
+      33,
+      38
+    ],
+    "score_medio_pares_com_34601": 0.5503180164981771,
+    "score_medio_pares_sem_34601": 0.6989953142145405
+  },
+  "librispeech": {
+    "n_fm": 423,
+    "n_fnm": 18,
+    "fnm_por_locutor": {
+      "6209": 13,
+      "5390": 4,
+      "6000": 1
+    },
+    "fnm_com_cap_34601": 13,
+    "fmr_mesmo_sexo": 0.021199502460656536,
+    "fmr_sexo_diferente": 0.0015890102004203189,
+    "fracao_fm_mesmo_sexo": 0.9267139479905437,
+    "fracao_impostores_mesmo_sexo": 0.48660526315789476
+  },
+  "vctk": {
+    "n_fm": 52,
+    "n_fnm": 3,
+    "fracao_fm_mesmo_sexo": 0.9807692307692307,
+    "fracao_impostores_mesmo_sexo": 0.5301104396749323,
+    "fracao_fm_mesmo_sotaque": 0.7115384615384616,
+    "fracao_impostores_mesmo_sotaque": 0.18608043342362993,
+    "fm_por_par_de_locutores": {
+      "p228-p244": 17,
+      "p239-p244": 7,
+      "p306-p318": 5,
+      "p228-p240": 3,
+      "p229-p239": 3
+    },
+    "fnm_com_microfones_diferentes": 2,
+    "score_genuino_mesmo_mic": 0.5954601091822398,
+    "score_genuino_mic_diferente": 0.5866546393304631
+  }
+}

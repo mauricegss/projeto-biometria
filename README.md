@@ -8,6 +8,8 @@
 
 ---
 
+> **Versão avaliada:** tag `final-v1.0`.
+
 ## Informações do Projeto
 
 | Campo | Valor |
@@ -135,6 +137,10 @@ Requisitos: **Python ≥ 3.10** (testado em 3.13), CPU funciona; GPU opcional (C
 ├── extract_embeddings.py   # inferência em lote (+ índice CSV)
 ├── train.py                # fine-tuning multi-seed
 ├── evaluate.py             # EER, ROC, FMR/FNMR, threshold na validação
+├── evaluate_robustness.py  # Exp. D (ruído branco e babble)
+├── ablation_study.py       # Exp. E (VAD/CMN)
+├── import_dupla8_protocols.py  # Exp. B: pares de LibriSpeech da Dupla 8
+├── make_paper_figures.py   # figuras e tabelas do artigo (results/paper/)
 ├── config.yaml             # configuração central
 ├── requirements.txt
 ├── PLANO_IMPLEMENTACAO.md  # status e plano até a entrega
@@ -194,6 +200,17 @@ python extract_embeddings.py --dataset librispeech --data_dir data/librispeech/t
   --files_csv protocols/librispeech/test_genuine_pairs.csv protocols/librispeech/test_impostor_pairs.csv
 python evaluate.py --dataset librispeech --threshold_from results/vctk/metrics.json
 
+# Exp. B — nosso modelo nos pares de LibriSpeech da Dupla 8
+python import_dupla8_protocols.py
+python extract_embeddings.py --dataset librispeech --data_dir data/librispeech/train-clean-100 `
+  --output_dir embeddings/dupla8 `
+  --files_csv protocols/dupla8/librispeech/test_genuine_pairs.csv protocols/dupla8/librispeech/test_impostor_pairs.csv
+python evaluate.py --dataset librispeech --embeddings_dir embeddings/dupla8 `
+  --protocols_dir protocols/dupla8 --results_dir results/dupla8 `
+  --threshold_from results/vctk/metrics.json
+# extract_embeddings.py grava o relatório em results/librispeech/inference_report.json;
+# o deste experimento foi movido para results/dupla8/librispeech/.
+
 # Exp. D — robustez a ruído aditivo (≥4 níveis)
 python evaluate_robustness.py --dataset vctk --noise_types white babble --snr_levels 20 10 5 0
 
@@ -224,6 +241,17 @@ python train.py --dataset vctk \
     --epochs 20 --seeds 42 123 2026
 ```
 
+> O fine-tuning **não foi executado** nas bases reais: todos os resultados do
+> artigo são do modelo pré-treinado (zero-shot). O caminho está implementado e
+> passou no smoke test, e fica como trabalho futuro (ver Limitações no artigo).
+
+### 4b. Figuras e análise de erros do artigo
+
+```bash
+# precisa do LibriSpeech e de data/vctk/speaker-info.txt (raiz do zip do VCTK)
+python make_paper_figures.py
+```
+
 ### 5. Auto-teste rápido do modelo
 
 ```bash
@@ -237,7 +265,7 @@ python model.py   # verifica shapes, normalização L2, lens e a loss
 | ID | Nome | Status |
 |---|---|---|
 | **A** | Baseline VCTK (zero-shot) | ✅ **Concluído** (12/11/2026) — `results/vctk/` |
-| **B** | 2 CNNs × 2 datasets (com Dupla 8) | ⏳ Fase 5 — depende da Dupla 8 |
+| **B** | 2 CNNs × 2 datasets (com Dupla 8) | ✅ **Nossa parte concluída** (25/11/2026) — `results/dupla8/librispeech/` |
 | **C** | Cross-dataset (VCTK → LibriSpeech) | ✅ **Concluído** (13/11/2026) — `results/librispeech/` |
 | **D** | Robustez a ruído (SNR 0–20 dB) | ✅ **Concluído** (13/11/2026) — `results/vctk/robustness/` |
 | **E** | Ablação do pipeline (VAD/CMN) | ✅ **Concluído** (13/11/2026) — `results/vctk/ablation/` |
@@ -269,6 +297,43 @@ Arquivos em `results/vctk/` (`scores.csv`, `val_scores.csv`, `metrics.json`,
 > ao LibriSpeech **sem novo fine-tuning** no destino (enunciado §11).
 > Embeddings extraídos com o mesmo modelo zero-shot; 7.508 pares avaliados
 > (1 FTA). Resultado em `results/librispeech/metrics.json`.
+
+### Resultados — Experimento B (2 CNNs × 2 datasets, 25/11/2026)
+
+As duas duplas de voz usam as mesmas bases com papéis invertidos, e cada CNN é
+avaliada nos pares definidos pela dupla que tem a base como principal
+(enunciado §11, regra 8):
+
+- **VCTK:** pares da Dupla 7 (`protocols/vctk/`). A Dupla 8 copiou esses
+  arquivos para `protocols/vctk_dupla7/` no repositório dela (conferidos: idênticos).
+- **LibriSpeech:** pares da Dupla 8, importados por `import_dupla8_protocols.py`
+  do commit `6e1f8170` de [SandWoodJones/Biometria](https://github.com/SandWoodJones/Biometria)
+  e conferidos por SHA-256 (`protocols/dupla8/librispeech/sha256.csv`).
+
+Modelo zero-shot, sem fine-tuning no LibriSpeech; threshold congelado na
+validação do VCTK (0,3532), como no Exp. C.
+
+| Métrica | ECAPA-TDNN · VCTK (pares Dupla 7) | ECAPA-TDNN · LibriSpeech (pares Dupla 8) |
+|---|---|---|
+| **EER (%)** | 1,36 | **0,68** |
+| **AUC-ROC** | 0,9991 | 0,9995 |
+| **FMR @ threshold** | 1,08% | 1,11% |
+| **FNMR @ threshold** | 1,81% | 0,47% |
+| **TAR @ FAR=1%** | 96,99% | 99,47% |
+| **d-prime** | 4,78 | 6,75 |
+| **Pares (genuínos / impostores)** | 166 / 4.799 | 3.800 / 38.000 |
+| **FTA** | 322 / 13.917 | 0 / 4.444 |
+| **Inferência (ms/utt, CPU)** | 107,5 | 708,6 (i5-10400F) |
+
+A coluna do VCTK é o Exp. A. Os resultados da ResNet-34 da Dupla 8 nas duas
+bases completam a matriz 2 × 2 e estão no repositório dela.
+
+> **Reprodutibilidade:** a extração do Exp. B rodou em outra máquina
+> (Linux, Python 3.12, torch 2.15 CPU). Para conferir o ambiente, 200 pares
+> do Exp. C (100 genuínos e 100 impostores, amostrados com seed 42) foram
+> reextraídos nela: diferença máxima de score de 0,0014 (média 0,00006)
+> em relação a `results/librispeech/scores.csv` e a mesma decisão nos 200 pares.
+> O tempo por utterance é maior que no Exp. C (348 ms) por causa da CPU.
 
 ### Resultados — Experimento D (robustez, 13/11/2026)
 
@@ -374,7 +439,8 @@ MIT — ver [LICENSE](LICENSE).
 
 | Campo | Valor |
 |---|---|
-| **Tag de entrega** | `final-v1.0` (criar no commit final) |
+| **Repositório** | <https://github.com/mauricegss/projeto-biometria> |
+| **Tag de entrega** | `final-v1.0` (criada no commit de entrega, após o merge na `main`) |
 
 ---
 
