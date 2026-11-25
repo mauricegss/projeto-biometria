@@ -280,13 +280,13 @@ Este documento centraliza tudo: **o que foi feito, o que está quebrado, o que f
 - [x] Exp. C (cross-dataset sem fine-tuning) — EER 0,64% (13/11/2026)
 - [x] Exp. D (robustez, ≥4 níveis) — 9 condições (13/11/2026)
 - [x] Exp. E (ablação) — 4 variantes (13/11/2026)
-- [ ] Fine-tuning 3 seeds (média ± desvio)
-- [ ] ≥3 FM + ≥3 FNM analisados
+- [ ] Fine-tuning 3 seeds (média ± desvio) — **não executado**; justificado em Limitações no artigo
+- [x] ≥3 FM + ≥3 FNM analisados — 25/11/2026 (VCTK e LibriSpeech; `make_paper_figures.py`)
 - [x] scores.csv + metrics.json no repositório (`results/vctk/`, `results/librispeech/`)
-- [ ] Artigo PDF 6–8 páginas (versão sem Exp. B)
-- [ ] Apresentação 10 min (versão sem Exp. B)
+- [x] Artigo PDF (`artigo/artigo.pdf`, IEEE, ~6 páginas + referências) — 25/11/2026, já com o Exp. B
+- [x] Apresentação 10 min (`apresentacao/apresentacao.pdf`, 13 slides) — 25/11/2026
 
 **Depende da Dupla 8 (Fase 5):**
 - [x] Exp. B (matriz 2 CNN × 2 datasets, protocolos compartilhados) — nossa parte, 25/11/2026
-- [ ] Resultados B inseridos no artigo e slides
+- [x] Resultados B inseridos no artigo e slides — 25/11/2026
 - [ ] Tag `final-v1.0` + hash no README (congelamento final)
